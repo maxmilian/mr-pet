@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MR.PET 派特先生</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        brand: '#D4A574',
+        'brand-dark': '#b8895a',
+        accent: '#4ecdc4',
+        'accent-dark': '#3db8b0',
+        warm: '#f8f5f0',
+        'warm-dark': '#f0ebe3',
+      },
+      fontFamily: {
+        sans: ['DM Sans', 'Noto Sans TC', 'sans-serif'],
+        display: ['DM Sans', 'serif'],
+      }
+    }
+  }
+}
+</script>
+<style>
+* { -webkit-tap-highlight-color: transparent; }
+body { font-family: 'Noto Sans TC', 'DM Sans', sans-serif; }
+.tab-content { display: none; animation: fadeIn 0.25s ease; }
+.tab-content.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.phone-frame { max-width: 430px; }
+@media (min-width: 500px) {
+  .phone-frame { border-radius: 2.5rem; box-shadow: 0 0 0 10px #1a1a1a, 0 25px 80px rgba(0,0,0,0.35); overflow: hidden; height: 932px; position: relative; }
+  .phone-frame .screen-inner { overflow-y: auto; height: calc(932px - 56px - 80px); }
+}
+@media (max-width: 499px) {
+  .phone-frame { width: 100%; }
+  .screen-inner { min-height: calc(100dvh - 56px - 80px); overflow-y: auto; }
+}
+.screen-inner::-webkit-scrollbar { width: 0; }
+.ecg-line { stroke-dasharray: 600; stroke-dashoffset: 600; animation: drawEcg 2.5s ease forwards; }
+@keyframes drawEcg { to { stroke-dashoffset: 0; } }
+.donut-ring { transition: stroke-dashoffset 1s ease; }
+</style>
+</head>
+<body class="bg-neutral-200 min-h-screen flex items-center justify-center">
+
+<div class="phone-frame w-full mx-auto bg-warm flex flex-col relative">
+
+  <!-- Status Bar -->
+  <div class="bg-warm px-5 pt-2 pb-1 flex justify-between items-center text-xs font-medium text-neutral-700 shrink-0" style="height:56px;">
+    <span class="font-display font-semibold">10:25</span>
+    <div class="flex items-center gap-1.5">
+      <!-- Signal -->
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="16" width="3" height="5" rx="0.5"/><rect x="7" y="12" width="3" height="9" rx="0.5"/><rect x="12" y="8" width="3" height="13" rx="0.5"/><rect x="17" y="4" width="3" height="17" rx="0.5"/></svg>
+      <!-- WiFi -->
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="currentColor"/></svg>
+      <!-- Battery -->
+      <svg class="w-5 h-4" viewBox="0 0 28 16" fill="currentColor"><rect x="0.5" y="1" width="23" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="24.5" y="5" width="2" height="6" rx="1"/><rect x="2.5" y="3" width="19" height="10" rx="1" fill="#34c759"/></svg>
+    </div>
+  </div>
+
+  <!-- Screen Content -->
+  <div class="screen-inner flex-1 bg-warm">
+
+    <!-- ====== TAB: 首頁 (Home) ====== -->
+    <div id="tab-home" class="tab-content active px-4 pb-6">
+      <!-- Header -->
+      <div class="flex justify-between items-center mb-4">
+        <h1 class="font-display text-2xl font-bold tracking-tight text-neutral-800" style="font-family:'DM Sans',serif;">MR.PET</h1>
+        <div class="flex items-center gap-2">
+          <span class="bg-accent/15 text-accent font-semibold text-xs px-2.5 py-1 rounded-full flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1.323l3.954 1.582 1.599-.8a1 1 0 01.894 1.79l-1.233.616 1.738 5.42a1 1 0 01-.285 1.05A3.989 3.989 0 0115 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.715-5.349L11 6.477V16h2a1 1 0 110 2H7a1 1 0 110-2h2V6.477L6.237 7.582l1.715 5.349a1 1 0 01-.285 1.05A3.989 3.989 0 015 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.738-5.42-1.233-.617a1 1 0 01.894-1.789l1.599.799L9 4.323V3a1 1 0 011-1z"/></svg>
+            +9,800 P
+          </span>
+          <!-- QR -->
+          <button class="cursor-pointer p-1.5 rounded-full hover:bg-neutral-200/60 transition">
+            <svg class="w-5 h-5 text-neutral-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 6.75h.75v.75h-.75zM6.75 16.5h.75v.75h-.75zM16.5 6.75h.75v.75H16.5zM13.5 13.5h.75v.75h-.75zM13.5 19.5h.75v.75h-.75zM19.5 13.5h.75v.75h-.75zM19.5 19.5h.75v.75h-.75zM16.5 16.5h.75v.75h-.75z"/></svg>
+          </button>
+          <!-- Bell -->
+          <button class="cursor-pointer p-1.5 rounded-full hover:bg-neutral-200/60 transition relative">
+            <svg class="w-5 h-5 text-neutral-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg>
+            <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Greeting -->
+      <div class="mb-5">
+        <h2 class="text-lg font-semibold text-neutral-800">Hi, 彭曉華</h2>
+        <p class="text-sm text-neutral-500">Mr.Pet派特先生在此為你服務。</p>
+      </div>
+
+      <!-- Hero Card -->
+      <div class="rounded-2xl overflow-hidden mb-5 cursor-pointer relative" style="background: linear-gradient(135deg, #D4A574 0%, #e8c9a0 40%, #f0d9b5 70%, #d4a574 100%); height: 160px;">
+        <div class="absolute inset-0 flex flex-col justify-end p-5">
+          <div class="absolute top-4 right-4 w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+            <svg class="w-8 h-8 text-white/80" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/></svg>
+          </div>
+          <p class="text-white font-semibold text-base drop-shadow">上傳活動的軟萌照片</p>
+          <p class="text-white/70 text-xs mt-0.5">分享毛孩的可愛瞬間</p>
+        </div>
+      </div>
+
+      <!-- Activity Calendar -->
+      <div class="bg-white rounded-2xl p-4 mb-5 shadow-sm">
+        <p class="text-xs text-neutral-500 mb-3">最近的一周您沒有預約看診與Mr.Pet活動</p>
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-xs font-medium text-neutral-400">11/18 - 11/24</span>
+        </div>
+        <div class="flex justify-between">
+          <div class="flex flex-col items-center gap-1" data-day="一"><span class="text-[10px] text-neutral-400">一</span><span class="text-xs font-medium text-neutral-600">18</span><span class="w-1 h-1 rounded-full bg-transparent"></span></div>
+          <div class="flex flex-col items-center gap-1"><span class="text-[10px] text-neutral-400">二</span><span class="text-xs font-medium text-neutral-600">19</span><span class="w-1 h-1 rounded-full bg-accent"></span></div>
+          <div class="flex flex-col items-center gap-1"><span class="text-[10px] text-neutral-400">三</span><span class="text-xs font-medium text-neutral-600">20</span><span class="w-1 h-1 rounded-full bg-transparent"></span></div>
+          <div class="flex flex-col items-center gap-1"><span class="text-[10px] text-neutral-400">四</span><span class="text-xs font-medium text-neutral-600">21</span><span class="w-1 h-1 rounded-full bg-brand"></span></div>
+          <div class="flex flex-col items-center gap-1"><span class="text-[10px] text-neutral-400">五</span><span class="text-xs font-medium text-neutral-600">22</span><span class="w-1 h-1 rounded-full bg-transparent"></span></div>
+          <div class="flex flex-col items-center gap-1"><span class="text-[10px] text-neutral-400">六</span><span class="text-xs font-medium text-neutral-600">23</span><span class="w-1 h-1 rounded-full bg-accent"></span></div>
+          <div class="flex flex-col items-center gap-1"><span class="text-[10px] text-neutral-400">日</span><span class="text-xs font-medium text-neutral-600">24</span><span class="w-1 h-1 rounded-full bg-transparent"></span></div>
+        </div>
+      </div>
+
+      <!-- MR.PET PRO -->
+      <div class="mb-4">
+        <h3 class="text-base font-bold text-neutral-800 mb-3 flex items-center gap-1.5">
+          <span class="font-display tracking-tight">MR.PET PRO</span>
+        </h3>
+
+        <!-- 月光盒 Card -->
+        <div class="bg-white rounded-2xl p-4 mb-3 shadow-sm cursor-pointer hover:shadow-md transition" onclick="switchTab('shop')">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-8 h-8 rounded-lg bg-brand/20 flex items-center justify-center">
+              <svg class="w-4.5 h-4.5 text-brand-dark" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 11.25v8.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 109.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1114.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg>
+            </div>
+            <h4 class="font-semibold text-sm text-neutral-800">生活用品月光盒</h4>
+          </div>
+          <div class="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs text-neutral-600">
+            <span>主糧試吃包 x2</span>
+            <span>健康零食包 x4</span>
+            <span>咬力雞娃 x2</span>
+            <span>美容體驗券 x1</span>
+            <span>行為訓練課程 x1</span>
+            <span>益生菌 x30包</span>
+          </div>
+        </div>
+
+        <!-- PetRisk AI Card -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm cursor-pointer hover:shadow-md transition" onclick="switchTab('health')">
+          <div class="flex items-center gap-2 mb-2">
+            <div class="w-8 h-8 rounded-lg bg-accent/15 flex items-center justify-center">
+              <svg class="w-4.5 h-4.5 text-accent-dark" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 14.5M14.25 3.104c.251.023.501.05.75.082M19.8 14.5a2.25 2.25 0 010 3l-3 3m0 0l-3-3m3 3V18M5 14.5a2.25 2.25 0 000 3l3 3m0 0l3-3m-3 3V18"/></svg>
+            </div>
+            <div>
+              <h4 class="font-semibold text-sm text-neutral-800">毛孩健康評估AI</h4>
+              <p class="text-[11px] text-accent font-medium">PetRisk.AI</p>
+            </div>
+          </div>
+          <p class="text-xs text-neutral-500">查閱健康檢查與診斷報告書</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== TAB: 商店 (Shop / 月光盒) ====== -->
+    <div id="tab-shop" class="tab-content px-4 pb-6">
+      <!-- Header -->
+      <div class="flex items-center gap-3 mb-5">
+        <button class="cursor-pointer p-1 rounded-full hover:bg-neutral-200/60 transition" onclick="switchTab('home')">
+          <svg class="w-5 h-5 text-neutral-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+        </button>
+        <h2 class="text-lg font-bold text-neutral-800">生活用品月光盒</h2>
+      </div>
+
+      <!-- Delivery Progress -->
+      <div class="bg-white rounded-2xl p-4 mb-5 shadow-sm">
+        <p class="text-xs font-medium text-neutral-500 mb-4">配送進度</p>
+        <div class="flex items-start justify-between relative">
+          <!-- Progress line -->
+          <div class="absolute top-3 left-[16%] right-[16%] h-0.5 bg-neutral-200"></div>
+          <div class="absolute top-3 left-[16%] h-0.5 bg-accent" style="width:68%"></div>
+          <!-- Steps -->
+          <div class="flex flex-col items-center z-10 w-1/3">
+            <div class="w-6 h-6 rounded-full bg-accent flex items-center justify-center mb-1.5">
+              <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+            </div>
+            <span class="text-[11px] font-medium text-neutral-700">寄貨完成</span>
+            <span class="text-[10px] text-neutral-400">10/29</span>
+          </div>
+          <div class="flex flex-col items-center z-10 w-1/3">
+            <div class="w-6 h-6 rounded-full bg-accent flex items-center justify-center mb-1.5">
+              <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+            </div>
+            <span class="text-[11px] font-medium text-neutral-700">理貨</span>
+            <span class="text-[10px] text-neutral-400">10/30</span>
+          </div>
+          <div class="flex flex-col items-center z-10 w-1/3">
+            <div class="w-6 h-6 rounded-full bg-accent flex items-center justify-center mb-1.5">
+              <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+            </div>
+            <span class="text-[11px] font-medium text-neutral-700">宅配完成</span>
+            <span class="text-[10px] text-neutral-400">11/1</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Item List -->
+      <div class="space-y-3 mb-5" id="shop-items">
+        <!-- Item 1 -->
+        <div class="bg-white rounded-xl p-3 shadow-sm flex items-center gap-3">
+          <div class="w-12 h-12 rounded-lg bg-amber-100 flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-neutral-800">主糧試吃包</p>
+            <p class="text-xs text-neutral-400">x2</p>
+          </div>
+          <button class="cursor-pointer p-1.5 heart-btn" onclick="toggleHeart(this)">
+            <svg class="w-5 h-5 text-neutral-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+          </button>
+          <button class="cursor-pointer p-1.5">
+            <svg class="w-5 h-5 text-neutral-300 hover:text-neutral-500 transition" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <!-- Item 2 -->
+        <div class="bg-white rounded-xl p-3 shadow-sm flex items-center gap-3">
+          <div class="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-neutral-800">健康零食包</p>
+            <p class="text-xs text-neutral-400">x4</p>
+          </div>
+          <button class="cursor-pointer p-1.5 heart-btn" onclick="toggleHeart(this)">
+            <svg class="w-5 h-5 text-neutral-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+          </button>
+          <button class="cursor-pointer p-1.5">
+            <svg class="w-5 h-5 text-neutral-300 hover:text-neutral-500 transition" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <!-- Item 3 - heart filled -->
+        <div class="bg-white rounded-xl p-3 shadow-sm flex items-center gap-3">
+          <div class="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342"/></svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-neutral-800">行為訓練課程</p>
+            <p class="text-xs text-neutral-400">x1</p>
+          </div>
+          <button class="cursor-pointer p-1.5 heart-btn hearted" onclick="toggleHeart(this)">
+            <svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z"/></svg>
+          </button>
+          <button class="cursor-pointer p-1.5">
+            <svg class="w-5 h-5 text-neutral-300 hover:text-neutral-500 transition" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <!-- Item 4 -->
+        <div class="bg-white rounded-xl p-3 shadow-sm flex items-center gap-3">
+          <div class="w-12 h-12 rounded-lg bg-rose-100 flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6 text-rose-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z"/></svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-neutral-800">咬力雞娃</p>
+            <p class="text-xs text-neutral-400">x2</p>
+          </div>
+          <button class="cursor-pointer p-1.5 heart-btn" onclick="toggleHeart(this)">
+            <svg class="w-5 h-5 text-neutral-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+          </button>
+          <button class="cursor-pointer p-1.5">
+            <svg class="w-5 h-5 text-neutral-300 hover:text-neutral-500 transition" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <!-- Item 5 -->
+        <div class="bg-white rounded-xl p-3 shadow-sm flex items-center gap-3">
+          <div class="w-12 h-12 rounded-lg bg-sky-100 flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6 text-sky-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-neutral-800">美容體驗券</p>
+            <p class="text-xs text-neutral-400">x1</p>
+          </div>
+          <button class="cursor-pointer p-1.5 heart-btn" onclick="toggleHeart(this)">
+            <svg class="w-5 h-5 text-neutral-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+          </button>
+          <button class="cursor-pointer p-1.5">
+            <svg class="w-5 h-5 text-neutral-300 hover:text-neutral-500 transition" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <!-- Item 6 -->
+        <div class="bg-white rounded-xl p-3 shadow-sm flex items-center gap-3">
+          <div class="w-12 h-12 rounded-lg bg-teal-100 flex items-center justify-center shrink-0">
+            <svg class="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 14.5M14.25 3.104c.251.023.501.05.75.082M19.8 14.5a2.25 2.25 0 010 3l-3 3m0 0l-3-3m3 3V18M5 14.5a2.25 2.25 0 000 3l3 3m0 0l3-3m-3 3V18"/></svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-neutral-800">益生菌</p>
+            <p class="text-xs text-neutral-400">x30包</p>
+          </div>
+          <button class="cursor-pointer p-1.5 heart-btn" onclick="toggleHeart(this)">
+            <svg class="w-5 h-5 text-neutral-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+          </button>
+          <button class="cursor-pointer p-1.5">
+            <svg class="w-5 h-5 text-neutral-300 hover:text-neutral-500 transition" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Bottom Banner -->
+      <div class="bg-brand/15 border border-brand/30 rounded-xl p-3 flex items-center gap-2">
+        <svg class="w-5 h-5 text-brand-dark shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
+        <p class="text-xs text-brand-dark font-medium">您尚有 2 項活動未預約成功...</p>
+      </div>
+    </div>
+
+    <!-- ====== TAB: 預約 (Appointment) ====== -->
+    <div id="tab-appointment" class="tab-content px-4 pb-6">
+      <div class="flex items-center gap-3 mb-5">
+        <h2 class="text-lg font-bold text-neutral-800">預約看診</h2>
+      </div>
+
+      <!-- Calendar -->
+      <div class="bg-white rounded-2xl p-4 mb-4 shadow-sm">
+        <div class="flex justify-between items-center mb-4">
+          <button class="cursor-pointer p-1">
+            <svg class="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+          </button>
+          <span class="font-semibold text-sm text-neutral-800">2025 年 11 月</span>
+          <button class="cursor-pointer p-1">
+            <svg class="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+          </button>
+        </div>
+        <!-- Days header -->
+        <div class="grid grid-cols-7 gap-1 mb-2 text-center">
+          <span class="text-[10px] text-neutral-400 font-medium">日</span>
+          <span class="text-[10px] text-neutral-400 font-medium">一</span>
+          <span class="text-[10px] text-neutral-400 font-medium">二</span>
+          <span class="text-[10px] text-neutral-400 font-medium">三</span>
+          <span class="text-[10px] text-neutral-400 font-medium">四</span>
+          <span class="text-[10px] text-neutral-400 font-medium">五</span>
+          <span class="text-[10px] text-neutral-400 font-medium">六</span>
+        </div>
+        <!-- Calendar grid -->
+        <div class="grid grid-cols-7 gap-1 text-center text-xs">
+          <span class="py-2 text-neutral-300"></span><span class="py-2 text-neutral-300"></span><span class="py-2 text-neutral-300"></span><span class="py-2 text-neutral-300"></span><span class="py-2 text-neutral-300"></span><span class="py-2 text-neutral-300"></span>
+          <span class="py-2 text-neutral-700">1</span>
+          <span class="py-2 text-neutral-700">2</span><span class="py-2 text-neutral-700">3</span><span class="py-2 text-neutral-700">4</span><span class="py-2 text-neutral-700">5</span><span class="py-2 text-neutral-700">6</span><span class="py-2 text-neutral-700">7</span><span class="py-2 text-neutral-700">8</span>
+          <span class="py-2 text-neutral-700">9</span><span class="py-2 text-neutral-700">10</span><span class="py-2 text-neutral-700">11</span>
+          <span class="py-2 text-neutral-700 relative cursor-pointer">12<span class="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-accent"></span></span>
+          <span class="py-2 text-neutral-700">13</span>
+          <span class="py-2 text-neutral-700 relative cursor-pointer">14<span class="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-accent"></span></span>
+          <span class="py-2 text-neutral-700">15</span>
+          <span class="py-2 text-neutral-700">16</span><span class="py-2 text-neutral-700">17</span>
+          <span class="py-2 rounded-full bg-accent text-white font-semibold cursor-pointer">18</span>
+          <span class="py-2 text-neutral-700">19</span>
+          <span class="py-2 text-neutral-700 relative cursor-pointer">20<span class="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-brand"></span></span>
+          <span class="py-2 text-neutral-700">21</span><span class="py-2 text-neutral-700">22</span>
+          <span class="py-2 text-neutral-700">23</span><span class="py-2 text-neutral-700">24</span><span class="py-2 text-neutral-700">25</span><span class="py-2 text-neutral-700">26</span><span class="py-2 text-neutral-700">27</span><span class="py-2 text-neutral-700">28</span><span class="py-2 text-neutral-700">29</span>
+          <span class="py-2 text-neutral-700">30</span>
+        </div>
+      </div>
+
+      <!-- Time Slots -->
+      <div class="bg-white rounded-2xl p-4 mb-4 shadow-sm">
+        <p class="text-sm font-semibold text-neutral-800 mb-3">可預約時段 - 11/18 (二)</p>
+        <div class="grid grid-cols-3 gap-2">
+          <button class="cursor-pointer text-xs py-2.5 rounded-lg border border-neutral-200 text-neutral-600 hover:border-accent hover:text-accent transition">09:00</button>
+          <button class="cursor-pointer text-xs py-2.5 rounded-lg border border-neutral-200 text-neutral-600 hover:border-accent hover:text-accent transition">09:30</button>
+          <button class="cursor-pointer text-xs py-2.5 rounded-lg border border-accent bg-accent/10 text-accent font-semibold">10:00</button>
+          <button class="cursor-pointer text-xs py-2.5 rounded-lg border border-neutral-200 text-neutral-600 hover:border-accent hover:text-accent transition">10:30</button>
+          <button class="cursor-pointer text-xs py-2.5 rounded-lg border border-neutral-200 text-neutral-600 hover:border-accent hover:text-accent transition">11:00</button>
+          <button class="cursor-pointer text-xs py-2.5 rounded-lg border border-neutral-200 text-neutral-300 cursor-not-allowed line-through">11:30</button>
+          <button class="cursor-pointer text-xs py-2.5 rounded-lg border border-neutral-200 text-neutral-600 hover:border-accent hover:text-accent transition">14:00</button>
+          <button class="cursor-pointer text-xs py-2.5 rounded-lg border border-neutral-200 text-neutral-600 hover:border-accent hover:text-accent transition">14:30</button>
+          <button class="cursor-pointer text-xs py-2.5 rounded-lg border border-neutral-200 text-neutral-600 hover:border-accent hover:text-accent transition">15:00</button>
+        </div>
+      </div>
+
+      <!-- Vet Clinic -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm">
+        <p class="text-sm font-semibold text-neutral-800 mb-3">選擇診所</p>
+        <div class="flex items-center gap-3 p-3 rounded-xl border-2 border-accent bg-accent/5 cursor-pointer">
+          <div class="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5 text-accent-dark" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 7.5h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z"/></svg>
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-neutral-800">寵愛動物醫院</p>
+            <p class="text-[11px] text-neutral-500">台北市大安區復興南路一段 235 號</p>
+          </div>
+          <svg class="w-4 h-4 text-accent ml-auto shrink-0" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"/></svg>
+        </div>
+        <div class="flex items-center gap-3 p-3 rounded-xl border border-neutral-200 mt-2 cursor-pointer hover:border-neutral-300 transition">
+          <div class="w-10 h-10 rounded-full bg-neutral-100 flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 7.5h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z"/></svg>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-neutral-700">幸福動物醫院</p>
+            <p class="text-[11px] text-neutral-400">台北市信義區松仁路 89 號</p>
+          </div>
+        </div>
+
+        <button class="cursor-pointer w-full mt-4 py-3 rounded-xl bg-accent text-white font-semibold text-sm hover:bg-accent-dark transition">確認預約</button>
+      </div>
+    </div>
+
+    <!-- ====== TAB: 健康計劃 (Health / PetRisk AI) ====== -->
+    <div id="tab-health" class="tab-content px-4 pb-6">
+      <!-- Header -->
+      <div class="flex justify-between items-center mb-4">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-accent/15 flex items-center justify-center">
+            <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 14.5M14.25 3.104c.251.023.501.05.75.082M19.8 14.5a2.25 2.25 0 010 3l-3 3m0 0l-3-3m3 3V18M5 14.5a2.25 2.25 0 000 3l3 3m0 0l3-3m-3 3V18"/></svg>
+          </div>
+          <div>
+            <h2 class="text-base font-bold text-neutral-800">毛孩健康評估AI</h2>
+            <p class="text-[10px] text-accent font-semibold tracking-wider">PetRisk.AI</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="bg-accent/15 text-accent font-semibold text-xs px-2.5 py-1 rounded-full">+9,800 P</span>
+          <button class="cursor-pointer bg-accent text-white text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-accent-dark transition" onclick="switchTab('appointment')">+ 預約看診</button>
+        </div>
+      </div>
+
+      <!-- Pet Info Card -->
+      <div class="bg-white rounded-2xl p-4 mb-4 shadow-sm">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-14 h-14 rounded-full bg-gradient-to-br from-brand/40 to-brand/10 flex items-center justify-center">
+            <svg class="w-7 h-7 text-brand-dark" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.633 10.5c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75A2.25 2.25 0 0116.5 4.5c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H14.23c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23H5.904M14.25 9h2.25M5.904 18.75c.083.205.173.405.27.602.197.4-.078.898-.523.898h-.908c-.889 0-1.713-.518-1.972-1.368a12 12 0 01-.521-3.507c0-1.553.295-3.036.831-4.398C3.387 10.203 4.167 9.75 5 9.75h1.053c.472 0 .745.556.5.96a8.958 8.958 0 00-1.302 4.665c0 1.194.232 2.333.654 3.375z"/></svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="font-bold text-neutral-800">公主三世</h3>
+            <div class="grid grid-cols-2 gap-x-4 gap-y-0.5 mt-1 text-xs text-neutral-500">
+              <span>品種: <span class="text-neutral-700 font-medium">馬爾濟斯</span></span>
+              <span>性別: <span class="text-neutral-700 font-medium">母</span></span>
+              <span>年齡: <span class="text-neutral-700 font-medium">9歲</span></span>
+              <span>體重: <span class="text-neutral-700 font-medium">5.5公斤</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Medical Record -->
+      <div class="bg-white rounded-2xl p-4 mb-4 shadow-sm">
+        <div class="flex justify-between items-center mb-3">
+          <h4 class="text-sm font-bold text-neutral-800">醫療紀錄</h4>
+          <span class="text-[11px] text-neutral-400">最近一次看診日 2025/3/8</span>
+        </div>
+
+        <!-- ECG -->
+        <div class="bg-neutral-50 rounded-xl p-3 mb-3">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-xs font-medium text-neutral-600">檢查報告: 心電圖 (ECG) 2025/3/8</span>
+            <span class="text-[10px] text-accent cursor-pointer font-medium">點圖放大</span>
+          </div>
+          <div class="bg-neutral-900 rounded-lg p-3 h-20 flex items-center overflow-hidden">
+            <svg viewBox="0 0 400 60" class="w-full h-full" preserveAspectRatio="none">
+              <path class="ecg-line" d="M0,30 L30,30 L35,30 L40,25 L45,30 L60,30 L65,30 L70,28 L75,30 L80,30 L90,30 L95,15 L100,50 L105,5 L110,55 L115,30 L120,30 L130,30 L135,28 L140,30 L155,30 L160,30 L165,25 L170,30 L185,30 L190,30 L195,28 L200,30 L205,30 L215,30 L220,15 L225,50 L230,5 L235,55 L240,30 L245,30 L255,30 L260,28 L265,30 L280,30 L285,30 L290,25 L295,30 L310,30 L315,30 L320,28 L325,30 L330,30 L340,30 L345,15 L350,50 L355,5 L360,55 L365,30 L370,30 L380,30 L385,28 L390,30 L400,30" fill="none" stroke="#4ecdc4" stroke-width="1.5"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Vet Diagnosis -->
+        <div class="mb-3">
+          <h5 class="text-xs font-bold text-neutral-700 mb-2">主治獸醫診斷</h5>
+          <div class="bg-amber-50 rounded-lg p-3 mb-2">
+            <p class="text-[11px] text-neutral-500 font-medium mb-1">飼主主訴:</p>
+            <p class="text-xs text-neutral-700 leading-relaxed">"公主三世今日10:10昏倒地，有心跳，感覺虛弱，灌水持續按摩胸腔後立即送醫。"</p>
+          </div>
+          <p class="text-xs text-neutral-600 leading-relaxed">1. 經臨床理學檢查與心音聽診，該馬爾濟斯於左側心尖區可觸及明顯心雜音（約 Grade IV/VI），心律不整，疑似二尖瓣閉鎖不全合併心房顫動。</p>
+        </div>
+      </div>
+
+      <!-- PetRisk AI Section -->
+      <div class="bg-gradient-to-br from-accent/5 to-accent/10 border border-accent/20 rounded-2xl p-4 mb-4">
+        <div class="flex items-center gap-2 mb-4">
+          <div class="w-6 h-6 rounded-md bg-accent flex items-center justify-center">
+            <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+          </div>
+          <h4 class="text-sm font-bold text-accent-dark">PetRisk AI 輔助判斷</h4>
+        </div>
+
+        <!-- ASCVD Risk -->
+        <div class="bg-white rounded-xl p-4 mb-3 shadow-sm">
+          <p class="text-[10px] font-semibold text-neutral-400 tracking-wider uppercase mb-3">ASCVD Risk Estimator</p>
+          <div class="grid grid-cols-2 gap-3 mb-3">
+            <div class="text-center p-3 bg-red-50 rounded-lg">
+              <p class="text-[10px] text-neutral-500 mb-1">10-Year ASCVD Risk</p>
+              <p class="text-2xl font-bold text-red-500">11.4%</p>
+            </div>
+            <div class="text-center p-3 bg-orange-50 rounded-lg">
+              <p class="text-[10px] text-neutral-500 mb-1">Lifetime ASCVD Risk</p>
+              <p class="text-2xl font-bold text-orange-500">69%</p>
+            </div>
+          </div>
+          <div class="flex gap-4 text-xs text-neutral-500">
+            <span>Optimal risk: <span class="font-semibold text-green-600">1.2%</span></span>
+            <span>Factual risk: <span class="font-semibold text-amber-600">5%</span></span>
+          </div>
+        </div>
+
+        <!-- PAC Donut Chart -->
+        <div class="bg-white rounded-xl p-4 mb-3 shadow-sm flex items-center gap-4">
+          <div class="relative w-20 h-20 shrink-0">
+            <svg class="w-20 h-20 -rotate-90" viewBox="0 0 36 36">
+              <circle cx="18" cy="18" r="14" fill="none" stroke="#e5e7eb" stroke-width="3"/>
+              <circle cx="18" cy="18" r="14" fill="none" stroke="#4ecdc4" stroke-width="3" stroke-dasharray="87.96" stroke-dashoffset="19.16" stroke-linecap="round" class="donut-ring"/>
+            </svg>
+            <div class="absolute inset-0 flex items-center justify-center">
+              <span class="text-sm font-bold text-accent-dark">78.2%</span>
+            </div>
+          </div>
+          <div>
+            <p class="text-sm font-bold text-neutral-800">PAC 78.2%</p>
+            <p class="text-[11px] text-neutral-500">心房早期收縮機率</p>
+          </div>
+        </div>
+
+        <!-- AI Analysis -->
+        <div class="bg-white rounded-xl p-4 shadow-sm">
+          <p class="text-[10px] font-semibold text-accent tracking-wider uppercase mb-2">AI 分析報告</p>
+          <div class="space-y-2 text-xs text-neutral-600 leading-relaxed">
+            <p>1. 經由心電圖（ECG）檢測並結合AI心臟節律分析模型進行輔助判讀，顯示該馬爾濟斯犬存在心房早期收縮（PAC）之可能性。</p>
+            <p>2. AI模型顯示其P波振幅略增高、P-R間期輕度延長，符合左心房負荷增加之可能。</p>
+            <p>3. 提供後續心音疾病的機率如上表輔助診斷。</p>
+            <p class="text-accent-dark font-medium">4. 建議於3個月內再進行檢查，如情形持續可進一步進行預防性治療。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== TAB: 會員中心 (Profile) ====== -->
+    <div id="tab-profile" class="tab-content px-4 pb-6">
+      <!-- Profile Header -->
+      <div class="text-center py-6">
+        <div class="w-20 h-20 rounded-full bg-gradient-to-br from-brand to-brand-dark mx-auto mb-3 flex items-center justify-center">
+          <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+        </div>
+        <h2 class="text-lg font-bold text-neutral-800">彭曉華</h2>
+        <p class="text-xs text-neutral-400 mt-0.5">PRO 會員</p>
+      </div>
+
+      <!-- VetPoints -->
+      <div class="bg-gradient-to-r from-accent to-accent-dark rounded-2xl p-5 mb-5 text-white text-center shadow-lg">
+        <p class="text-xs opacity-80 mb-1">VetPoints 餘額</p>
+        <p class="text-3xl font-bold tracking-tight">9,800 <span class="text-base font-normal opacity-80">P</span></p>
+        <p class="text-[11px] opacity-70 mt-1">有效期限至 2026/03/31</p>
+      </div>
+
+      <!-- Menu -->
+      <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <button class="cursor-pointer w-full flex items-center gap-3 p-4 hover:bg-neutral-50 transition border-b border-neutral-100">
+          <div class="w-9 h-9 rounded-lg bg-brand/10 flex items-center justify-center">
+            <svg class="w-5 h-5 text-brand-dark" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.633 10.5c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75A2.25 2.25 0 0116.5 4.5c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H14.23c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23H5.904M14.25 9h2.25M5.904 18.75c.083.205.173.405.27.602.197.4-.078.898-.523.898h-.908c-.889 0-1.713-.518-1.972-1.368a12 12 0 01-.521-3.507c0-1.553.295-3.036.831-4.398C3.387 10.203 4.167 9.75 5 9.75h1.053c.472 0 .745.556.5.96a8.958 8.958 0 00-1.302 4.665c0 1.194.232 2.333.654 3.375z"/></svg>
+          </div>
+          <span class="text-sm font-medium text-neutral-700 flex-1 text-left">我的寵物</span>
+          <svg class="w-4 h-4 text-neutral-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+        </button>
+        <button class="cursor-pointer w-full flex items-center gap-3 p-4 hover:bg-neutral-50 transition border-b border-neutral-100">
+          <div class="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center">
+            <svg class="w-5 h-5 text-accent-dark" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182"/></svg>
+          </div>
+          <span class="text-sm font-medium text-neutral-700 flex-1 text-left">訂閱方案</span>
+          <span class="text-[10px] bg-accent/15 text-accent font-semibold px-2 py-0.5 rounded-full mr-1">PRO</span>
+          <svg class="w-4 h-4 text-neutral-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+        </button>
+        <button class="cursor-pointer w-full flex items-center gap-3 p-4 hover:bg-neutral-50 transition border-b border-neutral-100">
+          <div class="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center">
+            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+          </div>
+          <span class="text-sm font-medium text-neutral-700 flex-1 text-left">訂單紀錄</span>
+          <svg class="w-4 h-4 text-neutral-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+        </button>
+        <button class="cursor-pointer w-full flex items-center gap-3 p-4 hover:bg-neutral-50 transition border-b border-neutral-100">
+          <div class="w-9 h-9 rounded-lg bg-rose-50 flex items-center justify-center">
+            <svg class="w-5 h-5 text-rose-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 010 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 010-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375z"/></svg>
+          </div>
+          <span class="text-sm font-medium text-neutral-700 flex-1 text-left">優惠券</span>
+          <span class="text-[10px] bg-rose-100 text-rose-500 font-semibold px-2 py-0.5 rounded-full mr-1">3</span>
+          <svg class="w-4 h-4 text-neutral-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+        </button>
+        <button class="cursor-pointer w-full flex items-center gap-3 p-4 hover:bg-neutral-50 transition border-b border-neutral-100">
+          <div class="w-9 h-9 rounded-lg bg-neutral-100 flex items-center justify-center">
+            <svg class="w-5 h-5 text-neutral-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          </div>
+          <span class="text-sm font-medium text-neutral-700 flex-1 text-left">設定</span>
+          <svg class="w-4 h-4 text-neutral-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+        </button>
+        <button class="cursor-pointer w-full flex items-center gap-3 p-4 hover:bg-neutral-50 transition">
+          <div class="w-9 h-9 rounded-lg bg-amber-50 flex items-center justify-center">
+            <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/></svg>
+          </div>
+          <span class="text-sm font-medium text-neutral-700 flex-1 text-left">客服中心</span>
+          <svg class="w-4 h-4 text-neutral-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /screen-inner -->
+
+  <!-- Bottom Navigation -->
+  <div class="shrink-0 bg-white border-t border-neutral-200 px-2 pb-4 pt-2 flex justify-around items-center" style="height:80px;">
+    <button class="cursor-pointer nav-btn flex flex-col items-center gap-0.5 py-1 px-3 rounded-lg transition" data-tab="shop" onclick="switchTab('shop')">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.15c0 .415.336.75.75.75z"/></svg>
+      <span class="text-[10px] font-medium">商店</span>
+    </button>
+    <button class="cursor-pointer nav-btn flex flex-col items-center gap-0.5 py-1 px-3 rounded-lg transition" data-tab="appointment" onclick="switchTab('appointment')">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
+      <span class="text-[10px] font-medium">預約</span>
+    </button>
+    <button class="cursor-pointer nav-btn flex flex-col items-center gap-0.5 py-1 px-3 rounded-lg transition active" data-tab="home" onclick="switchTab('home')">
+      <div class="w-12 h-12 -mt-6 rounded-full bg-brand flex items-center justify-center shadow-lg shadow-brand/30">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
+      </div>
+      <span class="text-[10px] font-medium">首頁</span>
+    </button>
+    <button class="cursor-pointer nav-btn flex flex-col items-center gap-0.5 py-1 px-3 rounded-lg transition" data-tab="health" onclick="switchTab('health')">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+      <span class="text-[10px] font-medium">健康計劃</span>
+    </button>
+    <button class="cursor-pointer nav-btn flex flex-col items-center gap-0.5 py-1 px-3 rounded-lg transition" data-tab="profile" onclick="switchTab('profile')">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+      <span class="text-[10px] font-medium">會員中心</span>
+    </button>
+  </div>
+
+</div><!-- /phone-frame -->
+
+<script>
+function switchTab(tabName) {
+  // Hide all tabs
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  // Show target
+  const target = document.getElementById('tab-' + tabName);
+  if (target) target.classList.add('active');
+  // Update nav
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    const isActive = btn.dataset.tab === tabName;
+    btn.classList.toggle('active', isActive);
+    if (isActive) {
+      btn.querySelector('svg:not(.w-6.h-6.text-white)')?.classList?.add('text-brand');
+      btn.querySelector('span')?.classList?.add('text-brand');
+      // special home button
+      if (tabName === 'home') {
+        btn.querySelector('svg')?.classList?.remove('text-brand');
+      }
+    } else {
+      btn.querySelectorAll('svg').forEach(s => s.classList.remove('text-brand'));
+      btn.querySelector('span')?.classList?.remove('text-brand');
+    }
+  });
+  updateNavColors(tabName);
+  // Scroll to top
+  document.querySelector('.screen-inner')?.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateNavColors(activeTab) {
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    const tab = btn.dataset.tab;
+    const isActive = tab === activeTab;
+    const svgs = btn.querySelectorAll('svg');
+    const label = btn.querySelector('span');
+    if (tab === 'home') {
+      // Home has special floating button
+      const circle = btn.querySelector('div');
+      if (circle) {
+        circle.classList.toggle('bg-brand', isActive);
+        circle.classList.toggle('bg-neutral-300', !isActive);
+        circle.classList.toggle('shadow-brand/30', isActive);
+        circle.classList.toggle('shadow-neutral-300/30', !isActive);
+      }
+      if (label) {
+        label.classList.toggle('text-brand', isActive);
+        label.classList.toggle('text-neutral-400', !isActive);
+      }
+    } else {
+      svgs.forEach(s => {
+        s.style.color = isActive ? '#D4A574' : '#a3a3a3';
+      });
+      if (label) {
+        label.style.color = isActive ? '#D4A574' : '#a3a3a3';
+      }
+    }
+  });
+}
+
+function toggleHeart(btn) {
+  const isHearted = btn.classList.contains('hearted');
+  if (isHearted) {
+    btn.classList.remove('hearted');
+    btn.innerHTML = '<svg class="w-5 h-5 text-neutral-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>';
+  } else {
+    btn.classList.add('hearted');
+    btn.innerHTML = '<svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z"/></svg>';
+  }
+}
+
+// Init nav colors
+updateNavColors('home');
+</script>
+
+</body>
+</html>

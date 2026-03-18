@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mr.Pet × PetRisk.AI — 下一代人寵健康 AI 生態系</title>
+  <meta name="description" content="從生活陪伴到醫療決策，一段關於信任與陪伴的嶄新旅程。Mr.Pet 派特先生寵物用品訂閱盒 × PetRisk.AI 健康評估輔助 AI。">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: { 900: '#0f1629', 800: '#1a1a2e', 700: '#232946' },
+            gold: { 400: '#e8c87e', 500: '#D4A574', 600: '#c4956a' },
+            teal: { 400: '#4ecdc4', 500: '#2cb5ac' },
+            coral: { 500: '#f97316' },
+          },
+          fontFamily: {
+            sans: ['DM Sans', 'Noto Sans TC', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+    .glass {
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .glass-light {
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.5);
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, #e8c87e 0%, #D4A574 50%, #c4956a 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .gradient-text-teal {
+      background: linear-gradient(135deg, #4ecdc4 0%, #2cb5ac 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-bg {
+      background: linear-gradient(135deg, #0f1629 0%, #1a1a2e 40%, #232946 100%);
+    }
+    .section-dark {
+      background: linear-gradient(180deg, #0f1629 0%, #1a1a2e 100%);
+    }
+    .section-warm {
+      background: linear-gradient(180deg, #f8f5f0 0%, #f0ebe3 100%);
+    }
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.15;
+      pointer-events: none;
+    }
+    /* Scroll animations */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .role-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .role-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+    /* Counter animation */
+    .counter { font-variant-numeric: tabular-nums; }
+    /* Nav active */
+    .nav-link { position: relative; }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 50%;
+      width: 0;
+      height: 2px;
+      background: #D4A574;
+      transition: all 0.3s ease;
+      transform: translateX(-50%);
+    }
+    .nav-link:hover::after,
+    .nav-link.active::after {
+      width: 100%;
+    }
+    /* Mobile menu */
+    .mobile-menu {
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+    }
+    .mobile-menu.open {
+      transform: translateX(0);
+    }
+    /* Pyramid */
+    .pyramid-layer {
+      clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+    }
+    /* Positioning chart */
+    .chart-dot {
+      transition: transform 0.3s ease;
+    }
+    .chart-dot:hover {
+      transform: scale(1.2);
+    }
+  </style>
+</head>
+<body class="font-sans text-gray-900 antialiased overflow-x-hidden">
+
+  <!-- ==================== NAVBAR ==================== -->
+  <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 lg:h-20">
+        <!-- Logo -->
+        <a href="#hero" class="flex items-center gap-2 cursor-pointer">
+          <span class="text-xl lg:text-2xl font-bold text-white">Mr.Pet</span>
+          <span class="text-gold-400 text-lg">×</span>
+          <span class="text-xl lg:text-2xl font-bold text-teal-400">PetRisk.AI</span>
+        </a>
+        <!-- Desktop Nav -->
+        <div class="hidden lg:flex items-center gap-8">
+          <a href="#pain-points" class="nav-link text-sm text-white/80 hover:text-white transition-colors cursor-pointer">產業痛點</a>
+          <a href="#solutions" class="nav-link text-sm text-white/80 hover:text-white transition-colors cursor-pointer">解決方案</a>
+          <a href="#products" class="nav-link text-sm text-white/80 hover:text-white transition-colors cursor-pointer">產品亮點</a>
+          <a href="#competition" class="nav-link text-sm text-white/80 hover:text-white transition-colors cursor-pointer">競爭分析</a>
+          <a href="#tech" class="nav-link text-sm text-white/80 hover:text-white transition-colors cursor-pointer">技術架構</a>
+          <a href="#team" class="nav-link text-sm text-white/80 hover:text-white transition-colors cursor-pointer">團隊</a>
+          <a href="#contact" class="px-5 py-2.5 bg-gold-500 hover:bg-gold-600 text-white text-sm font-semibold rounded-full transition-colors cursor-pointer">聯繫我們</a>
+        </div>
+        <!-- Mobile Menu Toggle -->
+        <button id="menuBtn" class="lg:hidden text-white cursor-pointer p-2" aria-label="開啟選單">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+      </div>
+    </div>
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="mobile-menu fixed top-0 right-0 w-72 h-screen bg-navy-900/95 backdrop-blur-xl border-l border-white/10 lg:hidden z-50">
+      <div class="p-6">
+        <button id="closeMenuBtn" class="text-white mb-8 cursor-pointer p-2" aria-label="關閉選單">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+        <div class="flex flex-col gap-6">
+          <a href="#pain-points" class="text-white/80 hover:text-gold-400 text-lg transition-colors cursor-pointer mobile-link">產業痛點</a>
+          <a href="#solutions" class="text-white/80 hover:text-gold-400 text-lg transition-colors cursor-pointer mobile-link">解決方案</a>
+          <a href="#products" class="text-white/80 hover:text-gold-400 text-lg transition-colors cursor-pointer mobile-link">產品亮點</a>
+          <a href="#competition" class="text-white/80 hover:text-gold-400 text-lg transition-colors cursor-pointer mobile-link">競爭分析</a>
+          <a href="#tech" class="text-white/80 hover:text-gold-400 text-lg transition-colors cursor-pointer mobile-link">技術架構</a>
+          <a href="#team" class="text-white/80 hover:text-gold-400 text-lg transition-colors cursor-pointer mobile-link">團隊</a>
+          <a href="#contact" class="px-5 py-3 bg-gold-500 text-white text-center font-semibold rounded-full cursor-pointer mobile-link mt-4">聯繫我們</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ==================== HERO ==================== -->
+  <section id="hero" class="hero-bg relative min-h-screen flex items-center overflow-hidden">
+    <div class="blob w-96 h-96 bg-gold-500 top-20 -left-20"></div>
+    <div class="blob w-80 h-80 bg-teal-400 bottom-10 right-10"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16 relative z-10">
+      <div class="grid lg:grid-cols-2 gap-12 items-center">
+        <div class="fade-up">
+          <p class="text-gold-400 text-sm font-semibold tracking-widest uppercase mb-4">Next-Gen Pet Health AI Ecosystem</p>
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-white leading-tight mb-6">
+            <span class="gradient-text">Mr.Pet</span>
+            <span class="text-white/60 mx-2">×</span>
+            <span class="gradient-text-teal">PetRisk.AI</span>
+          </h1>
+          <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-6">下一代人寵健康<br>AI 生態系</h2>
+          <p class="text-lg text-white/70 mb-10 max-w-lg leading-relaxed">從生活陪伴，到醫療決策，一段關於信任與陪伴的嶄新旅程</p>
+          <div class="flex flex-wrap gap-4">
+            <a href="#products" class="inline-flex items-center px-8 py-4 bg-gold-500 hover:bg-gold-600 text-white font-semibold rounded-full transition-all duration-300 cursor-pointer shadow-lg shadow-gold-500/20">
+              探索產品
+              <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </a>
+            <a href="#contact" class="inline-flex items-center px-8 py-4 border border-white/20 hover:border-white/40 text-white font-semibold rounded-full transition-all duration-300 cursor-pointer">
+              聯繫我們
+            </a>
+          </div>
+        </div>
+        <!-- Stats -->
+        <div class="fade-up grid grid-cols-2 gap-4 lg:gap-6">
+          <div class="glass rounded-2xl p-6 text-center">
+            <div class="text-3xl lg:text-4xl font-bold text-gold-400 counter" data-target="130">0</div>
+            <div class="text-sm text-white/60 mt-2">萬+寵物醫療檢查/年</div>
+          </div>
+          <div class="glass rounded-2xl p-6 text-center">
+            <div class="text-3xl lg:text-4xl font-bold text-teal-400 counter" data-target="61">0</div>
+            <div class="text-sm text-white/60 mt-2">% 飼主認為費用超出預期</div>
+          </div>
+          <div class="glass rounded-2xl p-6 text-center">
+            <div class="text-3xl lg:text-4xl font-bold text-coral-500 counter" data-target="96">0</div>
+            <div class="text-sm text-white/60 mt-2">%+ 醫院未數位化病例</div>
+          </div>
+          <div class="glass rounded-2xl p-6 text-center">
+            <div class="text-3xl lg:text-4xl font-bold text-white counter" data-target="45">0</div>
+            <div class="text-sm text-white/60 mt-2">% 飼主曾遇醫療糾紛</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
+      <span class="text-white/40 text-xs">Scroll</span>
+      <svg class="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+    </div>
+  </section>
+
+  <!-- ==================== EMOTIONAL HOOK ==================== -->
+  <section class="section-warm py-20 lg:py-28 relative overflow-hidden">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div class="fade-up">
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-navy-800 leading-tight mb-8">
+          為了毛孩的健康與長壽，<br>飼主願意付出多少代價？
+        </h2>
+        <div class="w-20 h-1 bg-gold-500 mx-auto rounded-full mb-8"></div>
+        <p class="text-xl lg:text-2xl text-navy-800/80 leading-relaxed max-w-3xl mx-auto mb-6">
+          真正重要的，是當<span class="text-coral-500 font-bold">毛孩健康正在流失</span>時，<br>
+          我們是否<span class="text-gold-600 font-bold">有能力、及時、正確選擇醫療行動</span>
+        </p>
+        <p class="text-lg text-navy-800/60">你我願意為了孩子的健康，願意付出多大的代價？</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== PAIN POINTS ==================== -->
+  <section id="pain-points" class="section-dark py-20 lg:py-28 relative overflow-hidden">
+    <div class="blob w-80 h-80 bg-red-500 top-20 right-0"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="text-center mb-16 fade-up">
+        <p class="text-gold-400 text-sm font-semibold tracking-widest uppercase mb-4">Industry Pain Points</p>
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">寵物產業 <span class="gradient-text">4 角色</span>的前 3 痛點</h2>
+        <p class="text-white/60 text-lg max-w-2xl mx-auto">解析寵物健康系統核心失序的四大關鍵角色</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6 lg:gap-8">
+        <!-- 飼主 -->
+        <div class="role-card glass rounded-2xl p-8 fade-up">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 rounded-xl bg-gold-500/20 flex items-center justify-center">
+              <svg class="w-6 h-6 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+            </div>
+            <h3 class="text-2xl font-bold text-gold-400">飼主</h3>
+          </div>
+          <ul class="space-y-3 text-white/80">
+            <li class="flex items-start gap-3">
+              <span class="w-6 h-6 rounded-full bg-gold-500/20 text-gold-400 text-xs flex items-center justify-center flex-shrink-0 mt-0.5 font-bold">1</span>
+              醫療費用與品質均難預測，一次重症就可能財務崩潰
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="w-6 h-6 rounded-full bg-gold-500/20 text-gold-400 text-xs flex items-center justify-center flex-shrink-0 mt-0.5 font-bold">2</span>
+              醫療資訊不透明，也無專業可以做出「不後悔的選擇」
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="w-6 h-6 rounded-full bg-gold-500/20 text-gold-400 text-xs flex items-center justify-center flex-shrink-0 mt-0.5 font-bold">3</span>
+              面對寵物疾病與死亡的心理負荷過重
+            </li>
+          </ul>
+        </div>
+
+        <!-- 獸醫 -->
+        <div class="role-card glass rounded-2xl p-8 fade-up">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 rounded-xl bg-teal-400/20 flex items-center justify-center">
+              <svg class="w-6 h-6 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            </div>
+            <h3 class="text-2xl font-bold text-teal-400">獸醫 & 醫療提供者</h3>
+          </div>
+          <ul class="space-y-3 text-white/80">
+            <li class="flex items-start gap-3">
+              <span class="w-6 h-6 rounded-full bg-teal-400/20 text-teal-400 text-xs flex items-center justify-center flex-shrink-0 mt-0.5 font-bold">1</span>
+              高工時＋人力不足，長期職業倦怠
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="w-6 h-6 rounded-full bg-teal-400/20 text-teal-400 text-xs flex items-center justify-center flex-shrink-0 mt-0.5 font-bold">2</span>
+              道德困境與情緒壓力，網路公審
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="w-6 h-6 rounded-full bg-teal-400/20 text-teal-400 text-xs flex items-center justify-center flex-shrink-0 mt-0.5 font-bold">3</span>
+              病例孤島易誤診，產生醫糾
+            </li>
+          </ul>
+        </div>
+
+        <!-- 保險業 -->
+        <div class="role-card glass rounded-2xl p-8 fade-up">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 rounded-xl bg-coral-500/20 flex items-center justify-center">
+              <svg class="w-6 h-6 text-coral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <h3 class="text-2xl font-bold text-coral-500">保險業 & 金融提供者</h3>
+          </div>
+          <ul class="space-y-3 text-white/80">
+            <li class="flex items-start gap-3">
+              <span class="w-6 h-6 rounded-full bg-coral-500/20 text-coral-500 text-xs flex items-center justify-center flex-shrink-0 mt-0.5 font-bold">1</span>
+              高風險＋資料不完整，難以精準定價
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="w-6 h-6 rounded-full bg-coral-500/20 text-coral-500 text-xs flex items-center justify-center flex-shrink-0 mt-0.5 font-bold">2</span>
+              用戶信任低，保費高、理賠爭議多
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="w-6 h-6 rounded-full bg-coral-500/20 text-coral-500 text-xs flex items-center justify-center flex-shrink-0 mt-0.5 font-bold">3</span>
+              缺乏與醫療端的流暢連結
+            </li>
+          </ul>
+        </div>
+
+        <!-- 監管單位 -->
+        <div class="role-card glass rounded-2xl p-8 fade-up">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
+              <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+            </div>
+            <h3 class="text-2xl font-bold text-purple-400">學者或監管單位</h3>
+          </div>
+          <ul class="space-y-3 text-white/80">
+            <li class="flex items-start gap-3">
+              <span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-xs flex items-center justify-center flex-shrink-0 mt-0.5 font-bold">1</span>
+              數據高度碎片化，無法做政策與風險治理
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-xs flex items-center justify-center flex-shrink-0 mt-0.5 font-bold">2</span>
+              醫療糾紛仍無法推動法令進步
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 text-xs flex items-center justify-center flex-shrink-0 mt-0.5 font-bold">3</span>
+              產業高速成長但配套落後
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== EXPECTATIONS ==================== -->
+  <section class="section-warm py-20 lg:py-28 relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16 fade-up">
+        <p class="text-gold-600 text-sm font-semibold tracking-widest uppercase mb-4">Expectations</p>
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-navy-800 mb-4">對於現狀，4 角色的<span class="text-gold-600">期待</span></h2>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 fade-up">
+        <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition-shadow cursor-pointer">
+          <div class="w-10 h-10 rounded-lg bg-gold-500/10 flex items-center justify-center mb-4">
+            <svg class="w-5 h-5 text-gold-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+          </div>
+          <h3 class="font-bold text-lg text-navy-800 mb-3">飼主</h3>
+          <ul class="text-sm text-navy-800/70 space-y-2 leading-relaxed">
+            <li>量化醫療報告</li>
+            <li>透明醫療資訊</li>
+            <li>做出正確醫療決策</li>
+            <li>減少醫療負擔</li>
+            <li>減低心理負荷</li>
+          </ul>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition-shadow cursor-pointer">
+          <div class="w-10 h-10 rounded-lg bg-teal-400/10 flex items-center justify-center mb-4">
+            <svg class="w-5 h-5 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          </div>
+          <h3 class="font-bold text-lg text-navy-800 mb-3">獸醫 & 醫療提供者</h3>
+          <ul class="text-sm text-navy-800/70 space-y-2 leading-relaxed">
+            <li>縮短醫療數據解讀時間</li>
+            <li>提升飼主認知效率</li>
+            <li>減低醫療糾紛風險</li>
+          </ul>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition-shadow cursor-pointer">
+          <div class="w-10 h-10 rounded-lg bg-coral-500/10 flex items-center justify-center mb-4">
+            <svg class="w-5 h-5 text-coral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h3 class="font-bold text-lg text-navy-800 mb-3">保險業 & 金融提供者</h3>
+          <ul class="text-sm text-navy-800/70 space-y-2 leading-relaxed">
+            <li>足夠多且長時間的數據</li>
+            <li>保單與理賠金精算</li>
+            <li>持續且信任的資料傳遞與稽核機制</li>
+          </ul>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition-shadow cursor-pointer">
+          <div class="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center mb-4">
+            <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+          </div>
+          <h3 class="font-bold text-lg text-navy-800 mb-3">學者或監管單位</h3>
+          <ul class="text-sm text-navy-800/70 space-y-2 leading-relaxed">
+            <li>多品種犬貓數據集中化</li>
+            <li>醫療糾紛證據留存</li>
+            <li>獸醫主動推動法令基礎</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SOLUTIONS ==================== -->
+  <section id="solutions" class="section-dark py-20 lg:py-28 relative overflow-hidden">
+    <div class="blob w-96 h-96 bg-teal-400 bottom-0 left-0"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="text-center mb-16 fade-up">
+        <p class="text-teal-400 text-sm font-semibold tracking-widest uppercase mb-4">Market Insight → Solution</p>
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">從痛點到市場洞察</h2>
+        <p class="text-white/60 text-lg max-w-3xl mx-auto">目前產業缺的，不是更多商品或醫療，而是架構一個「讓不確定變可預測」的系統</p>
+      </div>
+
+      <!-- Deep Insights Table -->
+      <div class="fade-up overflow-x-auto mb-12">
+        <table class="w-full min-w-[640px]">
+          <thead>
+            <tr class="border-b border-white/10">
+              <th class="text-left py-4 px-4 text-white/50 text-sm font-medium">角色</th>
+              <th class="py-4 px-4 text-gold-400 font-bold">飼主</th>
+              <th class="py-4 px-4 text-teal-400 font-bold">獸醫</th>
+              <th class="py-4 px-4 text-coral-500 font-bold">保險業</th>
+              <th class="py-4 px-4 text-purple-400 font-bold">監管單位</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-white/5">
+              <td class="py-4 px-4 text-white/50 text-sm">深層洞察</td>
+              <td class="py-4 px-4 text-white/80 text-sm text-center"><span class="text-coral-500 font-semibold">缺乏</span>安全感<br>醫療可預期性</td>
+              <td class="py-4 px-4 text-white/80 text-sm text-center"><span class="text-coral-500 font-semibold">缺乏</span>決策支持<br>情緒緩衝</td>
+              <td class="py-4 px-4 text-white/80 text-sm text-center"><span class="text-coral-500 font-semibold">缺乏</span>長期且大量<br>的健康風險可視化</td>
+              <td class="py-4 px-4 text-white/80 text-sm text-center"><span class="text-coral-500 font-semibold">缺乏</span>可治理的<br>寵物健康基礎數據</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Solutions -->
+      <div class="space-y-4 max-w-4xl mx-auto fade-up">
+        <div class="flex items-center gap-4 glass rounded-xl p-5">
+          <span class="w-10 h-10 rounded-full bg-teal-400/20 text-teal-400 flex items-center justify-center font-bold text-sm flex-shrink-0">1</span>
+          <p class="text-white font-medium">易於使用的可量化、追蹤的<span class="text-teal-400 font-semibold">健康檔案</span></p>
+        </div>
+        <div class="flex items-center gap-4 glass rounded-xl p-5">
+          <span class="w-10 h-10 rounded-full bg-teal-400/20 text-teal-400 flex items-center justify-center font-bold text-sm flex-shrink-0">2</span>
+          <p class="text-white font-medium">消弭擔憂與<span class="text-teal-400 font-semibold">輔助診斷與決策</span>的架構</p>
+        </div>
+        <div class="flex items-center gap-4 glass rounded-xl p-5">
+          <span class="w-10 h-10 rounded-full bg-teal-400/20 text-teal-400 flex items-center justify-center font-bold text-sm flex-shrink-0">3</span>
+          <p class="text-white font-medium">將寵物照護從「單一事件」，變成<span class="text-teal-400 font-semibold">「長期健康旅程」</span>的工具</p>
+        </div>
+      </div>
+
+      <!-- Two Brands -->
+      <div class="mt-16 grid md:grid-cols-2 gap-8 fade-up">
+        <div class="glass rounded-2xl p-8 text-center">
+          <h3 class="text-3xl font-black gradient-text mb-2">Mr.Pet 派特先生</h3>
+          <p class="text-white/60 text-sm mb-4">提供飼主情緒價值</p>
+          <div class="space-y-2 text-white/80 text-sm">
+            <p>寵物用品訂閱盒 · B2C · 訂閱制</p>
+            <p>消費累積 <span class="text-gold-400 font-bold">VetPoints</span></p>
+          </div>
+        </div>
+        <div class="glass rounded-2xl p-8 text-center">
+          <h3 class="text-3xl font-black gradient-text-teal mb-2">PetRisk.AI</h3>
+          <p class="text-white/60 text-sm mb-4">提供飼主與獸醫雙方安全感與信任</p>
+          <div class="space-y-2 text-white/80 text-sm">
+            <p>健康評估輔助 AI · B2C/B2B · 訂閱制</p>
+            <p><span class="text-teal-400 font-bold">VetPoints 折抵醫療費</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== PRODUCTS ==================== -->
+  <section id="products" class="section-warm py-20 lg:py-28 relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- PetRisk.AI -->
+      <div class="mb-24">
+        <div class="text-center mb-16 fade-up">
+          <p class="text-teal-500 text-sm font-semibold tracking-widest uppercase mb-4">B2B Product</p>
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-navy-800 mb-4">PetRisk.AI <span class="text-teal-500">產品亮點</span></h2>
+          <p class="text-navy-800/60 text-lg">銷售對象：獸醫診所</p>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-8 fade-up">
+          <div class="space-y-5">
+            <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition-shadow cursor-pointer">
+              <div class="flex items-start gap-4">
+                <span class="w-8 h-8 rounded-full bg-teal-500 text-white text-sm flex items-center justify-center font-bold flex-shrink-0 mt-0.5">1</span>
+                <div>
+                  <h4 class="font-bold text-navy-800 mb-2">世界級 AI 輔助判讀</h4>
+                  <p class="text-sm text-navy-800/70 leading-relaxed">定期以全球獸醫產業新知升級雲端 DataLake，協助獸醫以最新技術與知識分析檢查數據與影像，大幅提高診斷準確率</p>
+                </div>
+              </div>
+            </div>
+            <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition-shadow cursor-pointer">
+              <div class="flex items-start gap-4">
+                <span class="w-8 h-8 rounded-full bg-teal-500 text-white text-sm flex items-center justify-center font-bold flex-shrink-0 mt-0.5">2</span>
+                <div>
+                  <h4 class="font-bold text-navy-800 mb-2">疾病風險量化預警</h4>
+                  <p class="text-sm text-navy-800/70 leading-relaxed">將複雜數據與影像量化為患病風險 %，讓健康管理轉守為攻</p>
+                </div>
+              </div>
+            </div>
+            <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition-shadow cursor-pointer">
+              <div class="flex items-start gap-4">
+                <span class="w-8 h-8 rounded-full bg-teal-500 text-white text-sm flex items-center justify-center font-bold flex-shrink-0 mt-0.5">3</span>
+                <div>
+                  <h4 class="font-bold text-navy-800 mb-2">醫療資訊透明化</h4>
+                  <p class="text-sm text-navy-800/70 leading-relaxed">獸醫與飼主能同步並完全透明查閱就診所有訊息，共同參與管理</p>
+                </div>
+              </div>
+            </div>
+            <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition-shadow cursor-pointer">
+              <div class="flex items-start gap-4">
+                <span class="w-8 h-8 rounded-full bg-teal-500 text-white text-sm flex items-center justify-center font-bold flex-shrink-0 mt-0.5">4</span>
+                <div>
+                  <h4 class="font-bold text-navy-800 mb-2">醫療記錄永久數位保存</h4>
+                  <p class="text-sm text-navy-800/70 leading-relaxed">所有資料全部正確數位化且跟著飼主走，有利獲得高齡醫療保單</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Visual -->
+          <div class="flex items-center justify-center">
+            <div class="relative w-full max-w-md">
+              <div class="bg-gradient-to-br from-teal-400/10 to-teal-500/5 rounded-3xl p-8 border border-teal-500/20">
+                <div class="bg-white rounded-2xl shadow-xl p-6">
+                  <div class="flex items-center gap-3 mb-4 border-b pb-3">
+                    <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                    <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                    <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                    <span class="text-xs text-gray-400 ml-2">PetRisk.AI Dashboard</span>
+                  </div>
+                  <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                      <span class="text-xs text-gray-500">ASCVD Risk Estimator</span>
+                      <span class="text-xs text-teal-500 font-bold">AI Analysis</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                      <div class="bg-teal-50 rounded-lg p-3 text-center">
+                        <div class="text-2xl font-bold text-teal-600">11.4%</div>
+                        <div class="text-[10px] text-gray-400">10-Year Risk</div>
+                      </div>
+                      <div class="bg-orange-50 rounded-lg p-3 text-center">
+                        <div class="text-2xl font-bold text-orange-500">69%</div>
+                        <div class="text-[10px] text-gray-400">Lifetime Risk</div>
+                      </div>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-3">
+                      <div class="flex items-center gap-2 mb-2">
+                        <div class="w-2 h-2 rounded-full bg-teal-400"></div>
+                        <span class="text-[10px] text-gray-500">ECG + X-ray + Blood Test</span>
+                      </div>
+                      <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-teal-400 to-teal-500 rounded-full" style="width: 78%"></div>
+                      </div>
+                      <div class="text-right text-[10px] text-teal-500 font-semibold mt-1">PAC 78.2%</div>
+                    </div>
+                    <p class="text-[10px] text-gray-400 leading-relaxed">診斷以獸醫為主，PetRisk.AI 為輔。多模態 AI 整合影像＋血檢＋尿檢＋病史，提供長期疾病風險評估。</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mr.Pet -->
+      <div>
+        <div class="text-center mb-16 fade-up">
+          <p class="text-gold-600 text-sm font-semibold tracking-widest uppercase mb-4">B2C Product</p>
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-navy-800 mb-4">Mr.Pet 派特先生 <span class="text-gold-600">產品亮點</span></h2>
+          <p class="text-navy-800/60 text-lg">銷售對象：飼主</p>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-8 fade-up">
+          <!-- Visual - Phone mockup -->
+          <div class="flex items-center justify-center order-2 lg:order-1">
+            <div class="relative">
+              <div class="w-64 h-[500px] bg-navy-800 rounded-[2.5rem] p-2 shadow-2xl">
+                <div class="w-full h-full bg-white rounded-[2rem] overflow-hidden flex flex-col">
+                  <!-- Status bar -->
+                  <div class="bg-gold-500 px-4 py-3 flex items-center justify-between">
+                    <span class="text-white text-xs font-bold">MR.PET</span>
+                    <span class="text-white/80 text-[10px]">VetPoints +9,800 P</span>
+                  </div>
+                  <!-- Content -->
+                  <div class="flex-1 p-4 space-y-3">
+                    <div class="text-sm font-bold text-navy-800">Hi, 彭曉華</div>
+                    <div class="text-[10px] text-gray-400">Mr.Pet 派特先生在此為你服務</div>
+                    <!-- Items -->
+                    <div class="bg-amber-50 rounded-xl p-3">
+                      <div class="text-[10px] font-bold text-amber-800 mb-2">生活用品月光盒</div>
+                      <div class="space-y-1.5">
+                        <div class="flex justify-between text-[10px] text-gray-600"><span>主糧試吃包 x2</span><span>♡</span></div>
+                        <div class="flex justify-between text-[10px] text-gray-600"><span>健康零食包 x4</span><span>♡</span></div>
+                        <div class="flex justify-between text-[10px] text-gray-600"><span>行為訓練課程 x1</span><span>♥</span></div>
+                        <div class="flex justify-between text-[10px] text-gray-600"><span>咬力雞娃 x2</span><span>♡</span></div>
+                      </div>
+                    </div>
+                    <div class="bg-teal-50 rounded-xl p-3">
+                      <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 bg-teal-100 rounded-md flex items-center justify-center">
+                          <span class="text-[8px] text-teal-600 font-bold">AI</span>
+                        </div>
+                        <span class="text-[10px] font-bold text-teal-800">毛孩健康評估 AI</span>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Nav -->
+                  <div class="border-t px-2 py-2 flex justify-around">
+                    <div class="text-center"><div class="text-[8px] text-gray-400">商店</div></div>
+                    <div class="text-center"><div class="text-[8px] text-gray-400">預約</div></div>
+                    <div class="text-center"><div class="text-[8px] text-gold-500 font-bold">首頁</div></div>
+                    <div class="text-center"><div class="text-[8px] text-gray-400">健康計劃</div></div>
+                    <div class="text-center"><div class="text-[8px] text-gray-400">會員中心</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-5 order-1 lg:order-2">
+            <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition-shadow cursor-pointer">
+              <div class="flex items-start gap-4">
+                <span class="w-8 h-8 rounded-full bg-gold-500 text-white text-sm flex items-center justify-center font-bold flex-shrink-0 mt-0.5">1</span>
+                <div>
+                  <h4 class="font-bold text-navy-800 mb-2">「月光盒」驚喜訂閱制</h4>
+                  <p class="text-sm text-navy-800/70 leading-relaxed">超越業界準備超過 18 個月的月光盒菜單，每月根據寵物偏好調整精準遞送新奇生活用品、健康零食＆食品與豐富的活動體驗</p>
+                </div>
+              </div>
+            </div>
+            <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition-shadow cursor-pointer">
+              <div class="flex items-start gap-4">
+                <span class="w-8 h-8 rounded-full bg-gold-500 text-white text-sm flex items-center justify-center font-bold flex-shrink-0 mt-0.5">2</span>
+                <div>
+                  <h4 class="font-bold text-navy-800 mb-2">VetPoints 聰明回饋</h4>
+                  <p class="text-sm text-navy-800/70 leading-relaxed">在 Mr.Pet 的所有消費，都能累積 VetPoints，可直接在未來就診時折抵醫療費用，讓消費轉化為醫療保障</p>
+                </div>
+              </div>
+            </div>
+            <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition-shadow cursor-pointer">
+              <div class="flex items-start gap-4">
+                <span class="w-8 h-8 rounded-full bg-gold-500 text-white text-sm flex items-center justify-center font-bold flex-shrink-0 mt-0.5">3</span>
+                <div>
+                  <h4 class="font-bold text-navy-800 mb-2">老管家帶路活動體驗一站購</h4>
+                  <p class="text-sm text-navy-800/70 leading-relaxed">安排五花八門線下人寵體驗課線上購，特別著重高齡犬長照、幸福晚年等心靈成長課程</p>
+                </div>
+              </div>
+            </div>
+            <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition-shadow cursor-pointer">
+              <div class="flex items-start gap-4">
+                <span class="w-8 h-8 rounded-full bg-gold-500 text-white text-sm flex items-center justify-center font-bold flex-shrink-0 mt-0.5">4</span>
+                <div>
+                  <h4 class="font-bold text-navy-800 mb-2">寵物保險，購買未來保障</h4>
+                  <p class="text-sm text-navy-800/70 leading-relaxed">完整使用 PetRisk.AI 醫療所有功能，增加續保高齡寵物醫療險機會</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== COMPETITION ==================== -->
+  <section id="competition" class="section-dark py-20 lg:py-28 relative overflow-hidden">
+    <div class="blob w-80 h-80 bg-gold-500 top-40 right-0"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="text-center mb-16 fade-up">
+        <p class="text-gold-400 text-sm font-semibold tracking-widest uppercase mb-4">Competitive Analysis</p>
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">競爭分析</h2>
+        <p class="text-white/60 text-lg max-w-3xl mx-auto">從單點診斷工具到多模態健康決策引擎的產業升級<br>從商品訂閱服務到人寵全生命週期健康入口的消費升級</p>
+      </div>
+
+      <!-- Positioning Chart -->
+      <div class="fade-up max-w-4xl mx-auto mb-16">
+        <div class="glass rounded-2xl p-8">
+          <h3 class="text-xl font-bold text-white mb-8 text-center">競爭壁壘：獨佔「生活入口 + 醫療風險管理」的無人區</h3>
+          <div class="relative aspect-square max-w-lg mx-auto">
+            <!-- Axes -->
+            <div class="absolute bottom-0 left-0 right-0 h-px bg-white/20"></div>
+            <div class="absolute bottom-0 left-0 top-0 w-px bg-white/20"></div>
+            <!-- Labels -->
+            <div class="absolute -bottom-8 left-1/2 -translate-x-1/2 text-white/50 text-xs">全生命週期管理 (Full Lifecycle) →</div>
+            <div class="absolute top-1/2 -left-4 -translate-y-1/2 -rotate-90 text-white/50 text-xs whitespace-nowrap">臨床醫療與風險決策 →</div>
+            <div class="absolute bottom-2 left-2 text-white/30 text-[10px]">單一痛點解決</div>
+
+            <!-- Quadrant backgrounds -->
+            <div class="absolute bottom-0 left-0 w-1/2 h-1/2 bg-white/[0.02] rounded-bl-lg"></div>
+            <div class="absolute top-0 right-0 w-1/2 h-1/2 bg-teal-400/[0.05] rounded-tr-lg"></div>
+
+            <!-- Dots - Clinical/Single Point -->
+            <div class="chart-dot absolute" style="left: 25%; bottom: 65%">
+              <div class="w-3 h-3 rounded-full bg-gray-400"></div>
+              <span class="text-[10px] text-white/60 ml-2 whitespace-nowrap">SignalPET</span>
+            </div>
+            <div class="chart-dot absolute" style="left: 22%; bottom: 58%">
+              <div class="w-3 h-3 rounded-full bg-gray-400"></div>
+              <span class="text-[10px] text-white/60 ml-2 whitespace-nowrap">Zoetis VETSCAN</span>
+            </div>
+            <div class="chart-dot absolute" style="left: 20%; bottom: 52%">
+              <div class="w-3 h-3 rounded-full bg-gray-400"></div>
+              <span class="text-[10px] text-white/60 ml-2 whitespace-nowrap">NxVET</span>
+            </div>
+
+            <!-- Dots - Lifestyle/Single Point -->
+            <div class="chart-dot absolute" style="left: 20%; bottom: 35%">
+              <div class="w-3 h-3 rounded-full bg-gray-400"></div>
+              <span class="text-[10px] text-white/60 ml-2 whitespace-nowrap">ruff.box</span>
+            </div>
+            <div class="chart-dot absolute" style="left: 18%; bottom: 28%">
+              <div class="w-3 h-3 rounded-full bg-gray-400"></div>
+              <span class="text-[10px] text-white/60 ml-2 whitespace-nowrap">BarkBox</span>
+            </div>
+            <div class="chart-dot absolute" style="left: 15%; bottom: 20%">
+              <div class="w-3 h-3 rounded-full bg-gray-400"></div>
+              <span class="text-[10px] text-white/60 ml-2 whitespace-nowrap">Chewy Goody Box</span>
+            </div>
+
+            <!-- Mr.Pet × PetRisk.AI -->
+            <div class="chart-dot absolute" style="left: 65%; bottom: 70%">
+              <div class="w-16 h-16 rounded-full bg-gradient-to-br from-gold-400 to-teal-400 flex items-center justify-center shadow-lg shadow-teal-400/30 animate-pulse">
+                <span class="text-[8px] text-white font-bold text-center leading-tight">Mr.Pet<br>×<br>PetRisk</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Moat -->
+      <div class="fade-up grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+        <div class="glass rounded-2xl p-6 text-center">
+          <div class="w-12 h-12 rounded-xl bg-teal-400/20 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-6 h-6 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h4 class="text-white font-bold mb-2">多模態融合</h4>
+          <p class="text-white/60 text-sm">影像 + 血檢 + 尿檢 + 病史</p>
+        </div>
+        <div class="glass rounded-2xl p-6 text-center">
+          <div class="w-12 h-12 rounded-xl bg-gold-400/20 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-6 h-6 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <h4 class="text-white font-bold mb-2">C 端保險連結</h4>
+          <p class="text-white/60 text-sm">VetPoints 醫療折抵</p>
+        </div>
+        <div class="glass rounded-2xl p-6 text-center">
+          <div class="w-12 h-12 rounded-xl bg-coral-500/20 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-6 h-6 text-coral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+          </div>
+          <h4 class="text-white font-bold mb-2">長期風險預測</h4>
+          <p class="text-white/60 text-sm">連續學習的風險模型</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== TECH ARCHITECTURE ==================== -->
+  <section id="tech" class="section-warm py-20 lg:py-28 relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16 fade-up">
+        <p class="text-teal-500 text-sm font-semibold tracking-widest uppercase mb-4">Technology Architecture</p>
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-navy-800 mb-4">PetRisk.AI 核心技術架構</h2>
+        <p class="text-navy-800/60 text-lg max-w-2xl mx-auto">採用多模態人工智慧架構，亦擁有臨床經驗與醫學規則，是一個具有市場競爭力的創新產品</p>
+      </div>
+
+      <!-- Architecture diagram -->
+      <div class="fade-up max-w-5xl mx-auto">
+        <div class="bg-white rounded-3xl shadow-lg p-6 lg:p-10">
+          <!-- Data sources -->
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-8">
+            <div class="bg-navy-800 rounded-xl p-3 text-center">
+              <svg class="w-6 h-6 text-white mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              <span class="text-[10px] text-white/80">EMR</span>
+            </div>
+            <div class="bg-navy-800 rounded-xl p-3 text-center">
+              <svg class="w-6 h-6 text-white mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+              <span class="text-[10px] text-white/80">PACS</span>
+            </div>
+            <div class="bg-navy-800 rounded-xl p-3 text-center">
+              <svg class="w-6 h-6 text-white mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+              <span class="text-[10px] text-white/80">Labs</span>
+            </div>
+            <div class="bg-navy-800 rounded-xl p-3 text-center">
+              <svg class="w-6 h-6 text-white mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+              <span class="text-[10px] text-white/80">Notes</span>
+            </div>
+            <div class="bg-navy-800 rounded-xl p-3 text-center">
+              <svg class="w-6 h-6 text-white mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              <span class="text-[10px] text-white/80">Images</span>
+            </div>
+          </div>
+
+          <!-- Arrow down -->
+          <div class="flex justify-center mb-4">
+            <svg class="w-6 h-6 text-navy-800/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+          </div>
+
+          <!-- Processing layers -->
+          <div class="grid md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-teal-50 rounded-xl p-4 border border-teal-200">
+              <h4 class="text-sm font-bold text-teal-700 mb-2">Data Ingestion Layer</h4>
+              <p class="text-[11px] text-teal-600">DICOM / Secure Upload<br>FastAPI + GCP IAM</p>
+            </div>
+            <div class="bg-blue-50 rounded-xl p-4 border border-blue-200">
+              <h4 class="text-sm font-bold text-blue-700 mb-2">PetRisk.AI Data Lake</h4>
+              <p class="text-[11px] text-blue-600">GCS (Images, ECG)<br>BigQuery (Labs, Metadata)</p>
+            </div>
+            <div class="bg-purple-50 rounded-xl p-4 border border-purple-200">
+              <h4 class="text-sm font-bold text-purple-700 mb-2">Data Processing</h4>
+              <p class="text-[11px] text-purple-600">CVAT Annotation<br>OpenCV / MONAI / Pydicom</p>
+            </div>
+          </div>
+
+          <div class="flex justify-center mb-4">
+            <svg class="w-6 h-6 text-navy-800/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+          </div>
+
+          <!-- AI Core -->
+          <div class="grid md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-gradient-to-br from-navy-800 to-navy-700 rounded-xl p-4 text-center">
+              <h4 class="text-sm font-bold text-teal-400 mb-2">Knowledge Engine</h4>
+              <p class="text-[11px] text-white/70">LLM + KnowledgeGraph<br>Neo4j / LangChain</p>
+            </div>
+            <div class="bg-gradient-to-br from-navy-800 to-navy-700 rounded-xl p-4 text-center border-2 border-teal-400/50">
+              <h4 class="text-sm font-bold text-gold-400 mb-2">Multimodal AI Engine</h4>
+              <p class="text-[11px] text-white/70">Image + ECG + Data AI<br>PyTorch Models</p>
+            </div>
+            <div class="bg-gradient-to-br from-navy-800 to-navy-700 rounded-xl p-4 text-center">
+              <h4 class="text-sm font-bold text-coral-500 mb-2">AI Model Training</h4>
+              <p class="text-[11px] text-white/70">PyTorch / T-Flow / MONAI<br>Vertex AI</p>
+            </div>
+          </div>
+
+          <div class="flex justify-center mb-4">
+            <svg class="w-6 h-6 text-navy-800/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+          </div>
+
+          <!-- Output -->
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="bg-teal-500 rounded-xl p-4 text-center">
+              <h4 class="text-sm font-bold text-white mb-1">Vet Dashboard</h4>
+              <p class="text-[11px] text-white/80">React + Web</p>
+            </div>
+            <div class="bg-gold-500 rounded-xl p-4 text-center">
+              <h4 class="text-sm font-bold text-white mb-1">Pet Owner APP</h4>
+              <p class="text-[11px] text-white/80">Flutter for Mobile</p>
+            </div>
+          </div>
+
+          <!-- Continuous Learning -->
+          <div class="mt-6 bg-gray-50 rounded-xl p-4 border border-gray-200">
+            <div class="flex items-center gap-3">
+              <svg class="w-5 h-5 text-teal-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              <div>
+                <h4 class="text-sm font-bold text-navy-800">Continuous Learning</h4>
+                <p class="text-[11px] text-gray-500">全球獸醫期刊論文 (PubMed / MEDLINE / CABI / Scopus) + 台灣大學獸醫所專家篩選、賦能</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== TEAM ==================== -->
+  <section id="team" class="section-dark py-20 lg:py-28 relative overflow-hidden">
+    <div class="blob w-80 h-80 bg-teal-400 top-10 left-10"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="text-center mb-16 fade-up">
+        <p class="text-gold-400 text-sm font-semibold tracking-widest uppercase mb-4">Core Team</p>
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">核心執行團隊</h2>
+        <p class="text-white/60 text-lg">成員皆股東，與創辦人為大學同學關係，各自都有多年養寵經驗，且熱愛挑戰</p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 fade-up">
+        <!-- Luke -->
+        <div class="glass rounded-2xl p-6 text-center">
+          <div class="w-20 h-20 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 mx-auto mb-4 flex items-center justify-center">
+            <span class="text-2xl font-bold text-white">莊</span>
+          </div>
+          <h3 class="text-xl font-bold text-white mb-1">莊彥山 Luke</h3>
+          <p class="text-gold-400 text-sm font-semibold mb-3">Founder & CEO</p>
+          <div class="text-white/60 text-xs space-y-1">
+            <p>台大機械</p>
+            <p>9+ 年寵物產業連續創業經驗</p>
+            <p>14 年+ 上市公司工作經驗</p>
+            <p class="text-gold-400">累積約 800 萬+ 台幣募資款</p>
+          </div>
+        </div>
+
+        <!-- Dion -->
+        <div class="glass rounded-2xl p-6 text-center">
+          <div class="w-20 h-20 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 mx-auto mb-4 flex items-center justify-center">
+            <span class="text-2xl font-bold text-white">彭</span>
+          </div>
+          <h3 class="text-xl font-bold text-white mb-1">彭家豪 Dion</h3>
+          <p class="text-teal-400 text-sm font-semibold mb-3">Data Analysis / APP</p>
+          <div class="text-white/60 text-xs space-y-1">
+            <p>北大醫學</p>
+            <p>9 年+ AI 編程經歷</p>
+            <p>GCP 資安工程師</p>
+            <p>APP/WPA 設計師</p>
+          </div>
+        </div>
+
+        <!-- Crystal -->
+        <div class="glass rounded-2xl p-6 text-center">
+          <div class="w-20 h-20 rounded-full bg-gradient-to-br from-coral-500 to-red-500 mx-auto mb-4 flex items-center justify-center">
+            <span class="text-2xl font-bold text-white">吳</span>
+          </div>
+          <h3 class="text-xl font-bold text-white mb-1">吳筱芸 Crystal</h3>
+          <p class="text-coral-500 text-sm font-semibold mb-3">CFO</p>
+          <div class="text-white/60 text-xs space-y-1">
+            <p>台大會計所</p>
+            <p>21 年+ 財務經歷</p>
+            <p>前四大會計師安永協理</p>
+            <p>前第一金控、台積電</p>
+          </div>
+        </div>
+
+        <!-- Fiona -->
+        <div class="glass rounded-2xl p-6 text-center">
+          <div class="w-20 h-20 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 mx-auto mb-4 flex items-center justify-center">
+            <span class="text-2xl font-bold text-white">楊</span>
+          </div>
+          <h3 class="text-xl font-bold text-white mb-1">楊淑雲 Fiona</h3>
+          <p class="text-purple-400 text-sm font-semibold mb-3">Marketing</p>
+          <div class="text-white/60 text-xs space-y-1">
+            <p>輔大護理</p>
+            <p>10 年+ 網路銷售經驗</p>
+            <p>行銷企劃 + 美術編輯</p>
+            <p class="text-gold-400">累積 4000+ 詳細客戶資料</p>
+          </div>
+        </div>
+
+        <!-- John -->
+        <div class="glass rounded-2xl p-6 text-center sm:col-span-2 lg:col-span-2">
+          <div class="flex items-center gap-6 lg:justify-center flex-wrap">
+            <div>
+              <div class="w-20 h-20 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 mx-auto mb-4 flex items-center justify-center">
+                <span class="text-2xl font-bold text-white">林</span>
+              </div>
+              <h3 class="text-xl font-bold text-white mb-1">林翰佑 John</h3>
+              <p class="text-blue-400 text-sm font-semibold mb-3">獸醫學術代表 · 實驗室成員</p>
+            </div>
+            <div class="text-left text-white/60 text-xs space-y-1 max-w-sm">
+              <p class="text-blue-400 font-semibold text-sm">台大獸醫教授</p>
+              <p>2016 至今 台大獸醫所教授</p>
+              <p>45+ 發表論文數或專書</p>
+              <p>1993 獲獸醫資格</p>
+              <p class="text-white/80 mt-2">提供獸醫領域專業知識，進行全球論文解讀、影像標記並設置信心率，亦協助台大農學院附屬動物醫院之 POC 場域驗證導入</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== CONTACT / CTA ==================== -->
+  <section id="contact" class="relative py-20 lg:py-28 overflow-hidden" style="background: linear-gradient(135deg, #1a1a2e 0%, #232946 50%, #1a1a2e 100%);">
+    <div class="blob w-96 h-96 bg-gold-500 top-0 left-1/2 -translate-x-1/2"></div>
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+      <div class="fade-up">
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">一起打造下一代<br><span class="gradient-text">人寵健康 AI 生態系</span></h2>
+        <p class="text-white/60 text-lg mb-10 max-w-2xl mx-auto">從生活陪伴到醫療決策，我們正在重新定義寵物健康產業的未來</p>
+
+        <div class="glass rounded-2xl p-8 lg:p-12 max-w-lg mx-auto">
+          <div class="space-y-4 text-left">
+            <div class="flex items-center gap-3">
+              <svg class="w-5 h-5 text-gold-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+              <span class="text-white">玫瑰花瓣科技有限公司 CEO 莊彥山</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <svg class="w-5 h-5 text-gold-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>
+              <span class="text-white">www.mrpet.ai</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <svg class="w-5 h-5 text-gold-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              <a href="mailto:Luke@mrpet.ai" class="text-gold-400 hover:text-gold-300 transition-colors cursor-pointer">Luke@mrpet.ai</a>
+            </div>
+          </div>
+
+          <a href="mailto:Luke@mrpet.ai" class="mt-8 inline-flex items-center justify-center w-full px-8 py-4 bg-gold-500 hover:bg-gold-600 text-white font-semibold rounded-full transition-all duration-300 cursor-pointer shadow-lg shadow-gold-500/20">
+            立即聯繫
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="bg-navy-900 py-8 border-t border-white/5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-2">
+          <span class="text-lg font-bold text-white">Mr.Pet</span>
+          <span class="text-gold-400">×</span>
+          <span class="text-lg font-bold text-teal-400">PetRisk.AI</span>
+        </div>
+        <p class="text-white/40 text-sm">&copy; 2025 玫瑰花瓣科技有限公司. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== SCRIPTS ==================== -->
+  <script>
+    // Navbar background on scroll
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        navbar.classList.add('bg-navy-900/90', 'backdrop-blur-xl', 'shadow-lg');
+      } else {
+        navbar.classList.remove('bg-navy-900/90', 'backdrop-blur-xl', 'shadow-lg');
+      }
+    });
+
+    // Mobile menu
+    const menuBtn = document.getElementById('menuBtn');
+    const closeMenuBtn = document.getElementById('closeMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    menuBtn.addEventListener('click', () => mobileMenu.classList.add('open'));
+    closeMenuBtn.addEventListener('click', () => mobileMenu.classList.remove('open'));
+    document.querySelectorAll('.mobile-link').forEach(link => {
+      link.addEventListener('click', () => mobileMenu.classList.remove('open'));
+    });
+
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    // Counter animation
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const el = entry.target;
+          const target = parseInt(el.dataset.target);
+          let current = 0;
+          const increment = target / 60;
+          const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+              el.textContent = target;
+              clearInterval(timer);
+            } else {
+              el.textContent = Math.floor(current);
+            }
+          }, 25);
+          counterObserver.unobserve(el);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('.counter').forEach(el => counterObserver.observe(el));
+  </script>
+</body>
+</html>

@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PetRisk.AI - Veterinary Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        primary: '#4ecdc4',
+        navy: '#1a1a2e',
+        accent: '#D4A574',
+        surface: '#f0f4f8',
+      },
+      fontFamily: {
+        sans: ['DM Sans', 'Noto Sans TC', 'sans-serif'],
+      }
+    }
+  }
+}
+</script>
+<style>
+  body { font-family: 'DM Sans', 'Noto Sans TC', sans-serif; }
+  .sidebar-item.active { background: rgba(78,205,196,0.15); color: #4ecdc4; }
+  .sidebar-item:hover:not(.active) { background: rgba(255,255,255,0.05); }
+  .tab-btn.active { border-bottom: 2px solid #4ecdc4; color: #4ecdc4; font-weight: 600; }
+  .tab-btn:hover:not(.active) { color: #4ecdc4; }
+  .calendar-day:hover { background: #4ecdc4; color: white; }
+  .calendar-day.has-visit { background: rgba(78,205,196,0.15); color: #4ecdc4; font-weight: 600; }
+  .calendar-day.today { outline: 2px solid #4ecdc4; outline-offset: -2px; }
+  .ecg-grid { background-image:
+    linear-gradient(rgba(78,205,196,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(78,205,196,0.08) 1px, transparent 1px),
+    linear-gradient(rgba(78,205,196,0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(78,205,196,0.15) 1px, transparent 1px);
+    background-size: 10px 10px, 10px 10px, 50px 50px, 50px 50px;
+  }
+  @keyframes ecg-scroll { from { transform: translateX(0); } to { transform: translateX(-600px); } }
+  .ecg-animate { animation: ecg-scroll 4s linear infinite; }
+  .risk-bar { background: linear-gradient(90deg, #22c55e 0%, #eab308 40%, #f97316 65%, #ef4444 100%); }
+  @media (max-width: 1024px) {
+    .sidebar { width: 64px !important; }
+    .sidebar .sidebar-label { display: none; }
+    .sidebar .logo-text { display: none; }
+    .main-wrap { margin-left: 64px !important; }
+  }
+  @media (max-width: 768px) {
+    .sidebar { transform: translateX(-100%); position: fixed; z-index: 50; width: 240px !important; }
+    .sidebar.open { transform: translateX(0); }
+    .main-wrap { margin-left: 0 !important; }
+    .hamburger { display: flex !important; }
+  }
+  .donut-ring { transition: stroke-dasharray 0.8s ease; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+</style>
+</head>
+<body class="bg-surface min-h-screen">
+
+<!-- Overlay for mobile sidebar -->
+<div id="sidebarOverlay" class="fixed inset-0 bg-black/40 z-40 hidden" onclick="toggleSidebar()"></div>
+
+<!-- Sidebar -->
+<aside id="sidebar" class="sidebar fixed top-0 left-0 h-full bg-navy text-white flex flex-col transition-all duration-300" style="width:240px">
+  <!-- Logo -->
+  <div class="flex items-center gap-3 px-5 py-5 border-b border-white/10">
+    <div class="w-9 h-9 rounded-lg bg-primary flex items-center justify-center flex-shrink-0">
+      <svg class="w-5 h-5 text-navy" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3a3.75 3.75 0 00-3 6 3.75 3.75 0 00-3.75 3.75v.75a.75.75 0 00.75.75h1.5A3.75 3.75 0 009 18h6a3.75 3.75 0 003.75-3.75h1.5a.75.75 0 00.75-.75v-.75A3.75 3.75 0 0017.25 9a3.75 3.75 0 00-3-6h-4.5z"/></svg>
+    </div>
+    <span class="logo-text font-bold text-lg tracking-tight">PetRisk<span class="text-primary">.AI</span></span>
+  </div>
+  <!-- Nav -->
+  <nav class="flex-1 py-4 space-y-1 px-3">
+    <a href="#" class="sidebar-item active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors cursor-pointer">
+      <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zm0 9.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zm0 9.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25a2.25 2.25 0 01-2.25-2.25v-2.25z"/></svg>
+      <span class="sidebar-label">病例總覽</span>
+    </a>
+    <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-400 transition-colors cursor-pointer">
+      <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
+      <span class="sidebar-label">今日看診</span>
+    </a>
+    <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-400 transition-colors cursor-pointer">
+      <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+      <span class="sidebar-label">檢查報告</span>
+    </a>
+    <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-400 transition-colors cursor-pointer">
+      <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z"/></svg>
+      <span class="sidebar-label">AI 分析</span>
+    </a>
+    <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-400 transition-colors cursor-pointer">
+      <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      <span class="sidebar-label">設定</span>
+    </a>
+  </nav>
+  <!-- Bottom -->
+  <div class="px-4 py-4 border-t border-white/10">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+        <svg class="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"/></svg>
+      </div>
+      <span class="sidebar-label text-xs text-gray-400">v2.1.0</span>
+    </div>
+  </div>
+</aside>
+
+<!-- Main wrapper -->
+<div class="main-wrap transition-all duration-300" style="margin-left:240px">
+
+  <!-- Top Bar -->
+  <header class="bg-white border-b border-gray-200 px-4 lg:px-6 py-3 flex items-center gap-4 sticky top-0 z-30">
+    <!-- Hamburger (mobile) -->
+    <button class="hamburger hidden items-center justify-center w-9 h-9 rounded-lg hover:bg-gray-100 cursor-pointer" onclick="toggleSidebar()">
+      <svg class="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+    </button>
+    <!-- Search -->
+    <div class="flex-1 max-w-md relative">
+      <svg class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+      <input type="text" placeholder="搜尋病例、飼主、寵物..." class="w-full pl-9 pr-4 py-2 bg-surface rounded-lg text-sm border-0 focus:outline-none focus:ring-2 focus:ring-primary/40">
+    </div>
+    <!-- Right side -->
+    <div class="flex items-center gap-4 ml-auto">
+      <span class="text-sm text-gray-500 hidden sm:block">今日</span>
+      <span class="text-sm font-semibold text-navy hidden sm:block">3/8</span>
+      <!-- Bell -->
+      <button class="relative w-9 h-9 rounded-lg hover:bg-gray-100 flex items-center justify-center cursor-pointer">
+        <svg class="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.75a6 6 0 00-12 0v.75c0 2.12.74 4.07 1.976 5.607a23.847 23.847 0 005.454 1.31M14.857 17.082a3 3 0 01-5.714 0"/></svg>
+        <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
+      </button>
+      <!-- Avatar -->
+      <div class="flex items-center gap-2 cursor-pointer">
+        <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+          <svg class="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+        </div>
+        <span class="text-sm font-medium text-navy hidden sm:block">Dr. 王醫師</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Patient Header -->
+  <div class="bg-white border-b border-gray-200 px-4 lg:px-6 py-3">
+    <div class="flex flex-wrap items-center gap-4 mb-3">
+      <div class="flex items-center gap-2">
+        <span class="text-xs text-gray-500">編號碼</span>
+        <span class="text-sm font-bold text-navy bg-surface px-2.5 py-1 rounded">PD250214/01</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-xs text-gray-500">今日日期</span>
+        <span class="text-sm font-semibold text-navy">3/8</span>
+      </div>
+      <div class="flex items-center gap-1 ml-auto">
+        <button class="px-3 py-1.5 text-xs rounded-l-lg border border-gray-300 bg-primary text-white font-medium cursor-pointer">手板手寫輸入</button>
+        <button class="px-3 py-1.5 text-xs rounded-r-lg border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 cursor-pointer">電腦自動</button>
+      </div>
+    </div>
+    <!-- Tabs -->
+    <div class="flex gap-1 overflow-x-auto pb-0.5 -mb-3" id="mainTabs">
+      <button class="tab-btn px-3 py-2 text-xs whitespace-nowrap text-gray-500 border-b-2 border-transparent cursor-pointer transition-colors" data-tab="history">歷年檢查項目</button>
+      <button class="tab-btn active px-3 py-2 text-xs whitespace-nowrap text-gray-500 border-b-2 border-transparent cursor-pointer transition-colors" data-tab="ecg">ECG</button>
+      <button class="tab-btn px-3 py-2 text-xs whitespace-nowrap text-gray-500 border-b-2 border-transparent cursor-pointer transition-colors" data-tab="blood">尿檢+血檢</button>
+      <button class="tab-btn px-3 py-2 text-xs whitespace-nowrap text-gray-500 border-b-2 border-transparent cursor-pointer transition-colors" data-tab="ct">電腦斷層CT</button>
+      <button class="tab-btn px-3 py-2 text-xs whitespace-nowrap text-gray-500 border-b-2 border-transparent cursor-pointer transition-colors" data-tab="owner">飼主主訴</button>
+      <button class="tab-btn px-3 py-2 text-xs whitespace-nowrap text-gray-500 border-b-2 border-transparent cursor-pointer transition-colors" data-tab="xray">X光片</button>
+      <button class="tab-btn px-3 py-2 text-xs whitespace-nowrap text-gray-500 border-b-2 border-transparent cursor-pointer transition-colors" data-tab="risk">Risk & AI</button>
+      <button class="tab-btn px-3 py-2 text-xs whitespace-nowrap text-gray-500 border-b-2 border-transparent cursor-pointer transition-colors" data-tab="ultrasound">超音波</button>
+    </div>
+  </div>
+
+  <!-- Main Content Grid -->
+  <main class="p-4 lg:p-6">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-5">
+
+      <!-- LEFT PANEL: Calendar + Pet Info -->
+      <div class="lg:col-span-3 space-y-4">
+        <!-- Calendar -->
+        <div class="bg-white rounded-xl shadow-sm p-4">
+          <div class="flex items-center justify-between mb-3">
+            <button class="w-7 h-7 rounded-full hover:bg-gray-100 flex items-center justify-center cursor-pointer" onclick="changeMonth(-1)">
+              <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+            </button>
+            <span class="text-sm font-semibold text-navy" id="calendarTitle">2023年4月</span>
+            <button class="w-7 h-7 rounded-full hover:bg-gray-100 flex items-center justify-center cursor-pointer" onclick="changeMonth(1)">
+              <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+            </button>
+          </div>
+          <div class="grid grid-cols-7 gap-0.5 text-center text-xs text-gray-400 mb-1">
+            <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
+          </div>
+          <div class="grid grid-cols-7 gap-0.5 text-center text-xs" id="calendarGrid"></div>
+        </div>
+
+        <!-- Pet Info -->
+        <div class="bg-white rounded-xl shadow-sm p-4">
+          <div class="flex items-center gap-3 mb-4">
+            <!-- Pet Avatar -->
+            <div class="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
+              <svg class="w-8 h-8 text-primary/60" viewBox="0 0 64 64" fill="currentColor">
+                <ellipse cx="20" cy="16" rx="6" ry="8"/>
+                <ellipse cx="44" cy="16" rx="6" ry="8"/>
+                <ellipse cx="13" cy="38" rx="5" ry="7" transform="rotate(-15 13 38)"/>
+                <ellipse cx="51" cy="38" rx="5" ry="7" transform="rotate(15 51 38)"/>
+                <ellipse cx="32" cy="38" rx="14" ry="12"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-bold text-navy text-sm">公主三世</h3>
+              <p class="text-xs text-gray-400">馬爾濟斯</p>
+            </div>
+          </div>
+          <div class="space-y-2.5 text-xs">
+            <div class="flex justify-between"><span class="text-gray-400">飼主名稱</span><span class="text-navy font-medium">彭曉華</span></div>
+            <div class="flex justify-between"><span class="text-gray-400">品種</span><span class="text-navy font-medium">馬爾濟斯</span></div>
+            <div class="flex justify-between"><span class="text-gray-400">性別</span><span class="text-navy font-medium">母</span></div>
+            <div class="flex justify-between"><span class="text-gray-400">年齡</span><span class="text-navy font-medium">9歲</span></div>
+            <div class="flex justify-between"><span class="text-gray-400">體重</span><span class="text-navy font-medium">5.5 公斤</span></div>
+            <div class="flex justify-between"><span class="text-gray-400">BCS</span><span class="text-navy font-medium">5 分</span></div>
+            <div class="flex justify-between"><span class="text-gray-400">MCS</span><span class="text-navy font-medium">4</span></div>
+            <hr class="border-gray-100">
+            <div class="flex justify-between"><span class="text-gray-400">晶片碼</span><span class="text-navy font-mono text-[11px]">158097006745901</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CENTER PANEL: ECG -->
+      <div class="lg:col-span-5" id="tabContent">
+        <!-- ECG Tab (default) -->
+        <div class="tab-panel" data-panel="ecg">
+          <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+            <div class="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.5h2.25l2.25-6 3 12 3-9 2.25 4.5H21"/></svg>
+                <span class="text-sm font-semibold text-navy">ECG 心電圖</span>
+              </div>
+              <div class="flex items-center gap-2 text-[10px] text-gray-400">
+                <span>25mm/s</span>
+                <span>10mm/mV</span>
+                <span class="text-primary font-semibold">Lead II</span>
+              </div>
+            </div>
+            <!-- ECG Waveform -->
+            <div class="ecg-grid p-2 overflow-hidden" style="height:280px">
+              <svg viewBox="0 0 1200 250" preserveAspectRatio="none" class="w-full h-full ecg-animate" id="ecgSvg">
+                <!-- ECG Lead II waveform - realistic PQRST pattern -->
+                <path d="M0,125 L20,125 L25,122 L30,118 L35,120 L40,125 L60,125 L62,126 L64,130 L66,145 L67,155 L68,80 L69,40 L70,30 L71,55 L72,100 L73,140 L74,148 L75,135 L76,128 L78,125 L95,125 L100,123 L105,118 L110,112 L115,110 L120,115 L125,120 L130,125 L150,125
+                L170,125 L175,122 L180,118 L185,120 L190,125 L210,125 L212,126 L214,130 L216,145 L217,155 L218,80 L219,40 L220,30 L221,55 L222,100 L223,140 L224,148 L225,135 L226,128 L228,125 L245,125 L250,123 L255,118 L260,112 L265,110 L270,115 L275,120 L280,125 L300,125
+                L320,125 L325,122 L330,118 L335,120 L340,125 L360,125 L362,126 L364,130 L366,145 L367,155 L368,80 L369,40 L370,30 L371,55 L372,100 L373,140 L374,148 L375,135 L376,128 L378,125 L395,125 L400,123 L405,118 L410,112 L415,110 L420,115 L425,120 L430,125 L450,125
+                L470,125 L475,122 L480,118 L485,120 L490,125 L510,125 L512,126 L514,130 L516,145 L517,155 L518,80 L519,40 L520,30 L521,55 L522,100 L523,140 L524,148 L525,135 L526,128 L528,125 L545,125 L550,123 L555,118 L560,112 L565,110 L570,115 L575,120 L580,125 L600,125
+                L620,125 L625,122 L630,118 L635,120 L640,125 L660,125 L662,126 L664,130 L666,145 L667,155 L668,80 L669,40 L670,30 L671,55 L672,100 L673,140 L674,148 L675,135 L676,128 L678,125 L695,125 L700,123 L705,118 L710,112 L715,110 L720,115 L725,120 L730,125 L750,125
+                L770,125 L775,122 L780,118 L785,120 L790,125 L810,125 L812,126 L814,130 L816,145 L817,155 L818,80 L819,40 L820,30 L821,55 L822,100 L823,140 L824,148 L825,135 L826,128 L828,125 L845,125 L850,123 L855,118 L860,112 L865,110 L870,115 L875,120 L880,125 L900,125
+                L920,125 L925,122 L930,118 L935,120 L940,125 L960,125 L962,126 L964,130 L966,145 L967,155 L968,80 L969,40 L970,30 L971,55 L972,100 L973,140 L974,148 L975,135 L976,128 L978,125 L995,125 L1000,123 L1005,118 L1010,112 L1015,110 L1020,115 L1025,120 L1030,125 L1050,125
+                L1070,125 L1075,122 L1080,118 L1085,120 L1090,125 L1110,125 L1112,126 L1114,130 L1116,145 L1117,155 L1118,80 L1119,40 L1120,30 L1121,55 L1122,100 L1123,140 L1124,148 L1125,135 L1126,128 L1128,125 L1145,125 L1150,123 L1155,118 L1160,112 L1165,110 L1170,115 L1175,120 L1180,125 L1200,125"
+                fill="none" stroke="#4ecdc4" stroke-width="2" stroke-linejoin="round"/>
+                <!-- Duplicate shifted for seamless loop -->
+                <path d="M1200,125 L1220,125 L1225,122 L1230,118 L1235,120 L1240,125 L1260,125 L1262,126 L1264,130 L1266,145 L1267,155 L1268,80 L1269,40 L1270,30 L1271,55 L1272,100 L1273,140 L1274,148 L1275,135 L1276,128 L1278,125 L1295,125 L1300,123 L1305,118 L1310,112 L1315,110 L1320,115 L1325,120 L1330,125 L1350,125
+                L1370,125 L1375,122 L1380,118 L1385,120 L1390,125 L1410,125 L1412,126 L1414,130 L1416,145 L1417,155 L1418,80 L1419,40 L1420,30 L1421,55 L1422,100 L1423,140 L1424,148 L1425,135 L1426,128 L1428,125 L1445,125 L1450,123 L1455,118 L1460,112 L1465,110 L1470,115 L1475,120 L1480,125 L1500,125
+                L1520,125 L1525,122 L1530,118 L1535,120 L1540,125 L1560,125 L1562,126 L1564,130 L1566,145 L1567,155 L1568,80 L1569,40 L1570,30 L1571,55 L1572,100 L1573,140 L1574,148 L1575,135 L1576,128 L1578,125 L1595,125 L1600,123 L1605,118 L1610,112 L1615,110 L1620,115 L1625,120 L1630,125 L1650,125
+                L1670,125 L1675,122 L1680,118 L1685,120 L1690,125 L1710,125 L1712,126 L1714,130 L1716,145 L1717,155 L1718,80 L1719,40 L1720,30 L1721,55 L1722,100 L1723,140 L1724,148 L1725,135 L1726,128 L1728,125 L1745,125 L1750,123 L1755,118 L1760,112 L1765,110 L1770,115 L1775,120 L1780,125 L1800,125"
+                fill="none" stroke="#4ecdc4" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <!-- ECG Lead labels -->
+            <div class="px-4 py-2 border-t border-gray-100 flex items-center gap-3 text-[10px] overflow-x-auto">
+              <span class="px-2 py-1 rounded bg-primary/10 text-primary font-semibold cursor-pointer">Lead II</span>
+              <span class="px-2 py-1 rounded hover:bg-gray-100 text-gray-400 cursor-pointer">Lead I</span>
+              <span class="px-2 py-1 rounded hover:bg-gray-100 text-gray-400 cursor-pointer">Lead III</span>
+              <span class="px-2 py-1 rounded hover:bg-gray-100 text-gray-400 cursor-pointer">aVR</span>
+              <span class="px-2 py-1 rounded hover:bg-gray-100 text-gray-400 cursor-pointer">aVL</span>
+              <span class="px-2 py-1 rounded hover:bg-gray-100 text-gray-400 cursor-pointer">aVF</span>
+            </div>
+            <!-- ECG Stats -->
+            <div class="grid grid-cols-4 border-t border-gray-100 divide-x divide-gray-100">
+              <div class="px-3 py-2.5 text-center">
+                <p class="text-[10px] text-gray-400">HR</p>
+                <p class="text-sm font-bold text-navy">98 <span class="text-[10px] font-normal text-gray-400">bpm</span></p>
+              </div>
+              <div class="px-3 py-2.5 text-center">
+                <p class="text-[10px] text-gray-400">PR</p>
+                <p class="text-sm font-bold text-navy">0.14 <span class="text-[10px] font-normal text-gray-400">s</span></p>
+              </div>
+              <div class="px-3 py-2.5 text-center">
+                <p class="text-[10px] text-gray-400">QRS</p>
+                <p class="text-sm font-bold text-navy">0.08 <span class="text-[10px] font-normal text-gray-400">s</span></p>
+              </div>
+              <div class="px-3 py-2.5 text-center">
+                <p class="text-[10px] text-gray-400">QT/QTc</p>
+                <p class="text-sm font-bold text-navy">0.32 <span class="text-[10px] font-normal text-gray-400">s</span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Other tab panels (placeholder) -->
+        <div class="tab-panel hidden" data-panel="history">
+          <div class="bg-white rounded-xl shadow-sm p-6 text-center text-gray-400 text-sm">
+            <svg class="w-10 h-10 mx-auto mb-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+            歷年檢查項目紀錄
+          </div>
+        </div>
+        <div class="tab-panel hidden" data-panel="blood">
+          <div class="bg-white rounded-xl shadow-sm p-6 text-center text-gray-400 text-sm">
+            <svg class="w-10 h-10 mx-auto mb-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"/></svg>
+            尿檢+血檢報告
+          </div>
+        </div>
+        <div class="tab-panel hidden" data-panel="ct">
+          <div class="bg-white rounded-xl shadow-sm p-6 text-center text-gray-400 text-sm">
+            <svg class="w-10 h-10 mx-auto mb-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 20.25h12m-7.5-3v3m3-3v3m-10.125-3h17.25c.621 0 1.125-.504 1.125-1.125V4.875c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125z"/></svg>
+            電腦斷層 CT 影像
+          </div>
+        </div>
+        <div class="tab-panel hidden" data-panel="owner">
+          <div class="bg-white rounded-xl shadow-sm p-6 text-center text-gray-400 text-sm">
+            <svg class="w-10 h-10 mx-auto mb-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/></svg>
+            飼主主訴紀錄
+          </div>
+        </div>
+        <div class="tab-panel hidden" data-panel="xray">
+          <div class="bg-white rounded-xl shadow-sm p-6 text-center text-gray-400 text-sm">
+            <svg class="w-10 h-10 mx-auto mb-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5a1.5 1.5 0 001.5-1.5V5.25a1.5 1.5 0 00-1.5-1.5H3.75a1.5 1.5 0 00-1.5 1.5v14.25a1.5 1.5 0 001.5 1.5z"/></svg>
+            X光片影像
+          </div>
+        </div>
+        <div class="tab-panel hidden" data-panel="risk">
+          <div class="bg-white rounded-xl shadow-sm p-6 text-center text-gray-400 text-sm">
+            <svg class="w-10 h-10 mx-auto mb-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>
+            Risk & AI 分析
+          </div>
+        </div>
+        <div class="tab-panel hidden" data-panel="ultrasound">
+          <div class="bg-white rounded-xl shadow-sm p-6 text-center text-gray-400 text-sm">
+            <svg class="w-10 h-10 mx-auto mb-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.348 14.651a3.75 3.75 0 010-5.303m5.304 0a3.75 3.75 0 010 5.303m-7.425 2.122a6.75 6.75 0 010-9.546m9.546 0a6.75 6.75 0 010 9.546M5.106 18.894c-3.808-3.808-3.808-9.98 0-13.789m13.788 0c3.808 3.808 3.808 9.981 0 13.79M12 12.75h.008v.008H12v-.008z"/></svg>
+            超音波影像
+          </div>
+        </div>
+
+        <!-- X-ray thumbnails below ECG -->
+        <div class="mt-4 bg-white rounded-xl shadow-sm p-4">
+          <div class="flex items-center gap-2 mb-3">
+            <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5a1.5 1.5 0 001.5-1.5V5.25a1.5 1.5 0 00-1.5-1.5H3.75a1.5 1.5 0 00-1.5 1.5v14.25a1.5 1.5 0 001.5 1.5z"/></svg>
+            <span class="text-xs font-semibold text-navy">X光片影像</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <div class="aspect-square bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center cursor-pointer hover:ring-2 hover:ring-primary transition-shadow">
+              <svg class="w-full h-full p-3" viewBox="0 0 100 100">
+                <rect width="100" height="100" fill="#111827"/>
+                <!-- Stylized chest X-ray -->
+                <ellipse cx="50" cy="45" rx="28" ry="35" fill="none" stroke="#374151" stroke-width="1.5"/>
+                <ellipse cx="40" cy="42" rx="10" ry="16" fill="none" stroke="#4b5563" stroke-width="1"/>
+                <ellipse cx="60" cy="42" rx="10" ry="16" fill="none" stroke="#4b5563" stroke-width="1"/>
+                <!-- Heart silhouette -->
+                <ellipse cx="48" cy="50" rx="8" ry="10" fill="#374151" opacity="0.8"/>
+                <!-- Spine -->
+                <line x1="50" y1="15" x2="50" y2="80" stroke="#374151" stroke-width="2"/>
+                <!-- Ribs -->
+                <path d="M35,30 Q50,28 65,30" fill="none" stroke="#374151" stroke-width="0.8"/>
+                <path d="M33,37 Q50,35 67,37" fill="none" stroke="#374151" stroke-width="0.8"/>
+                <path d="M32,44 Q50,42 68,44" fill="none" stroke="#374151" stroke-width="0.8"/>
+                <path d="M33,51 Q50,49 67,51" fill="none" stroke="#374151" stroke-width="0.8"/>
+                <path d="M34,58 Q50,56 66,58" fill="none" stroke="#374151" stroke-width="0.8"/>
+                <text x="5" y="95" fill="#4b5563" font-size="6">VD View</text>
+              </svg>
+            </div>
+            <div class="aspect-square bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center cursor-pointer hover:ring-2 hover:ring-primary transition-shadow">
+              <svg class="w-full h-full p-3" viewBox="0 0 100 100">
+                <rect width="100" height="100" fill="#111827"/>
+                <!-- Lateral view -->
+                <ellipse cx="50" cy="45" rx="32" ry="25" fill="none" stroke="#374151" stroke-width="1.5"/>
+                <ellipse cx="42" cy="48" rx="12" ry="10" fill="#374151" opacity="0.6"/>
+                <line x1="50" y1="20" x2="50" y2="70" stroke="#374151" stroke-width="1.5"/>
+                <path d="M30,30 Q50,28 70,32" fill="none" stroke="#374151" stroke-width="0.8"/>
+                <path d="M28,38 Q50,36 72,40" fill="none" stroke="#374151" stroke-width="0.8"/>
+                <path d="M27,46 Q50,44 73,48" fill="none" stroke="#374151" stroke-width="0.8"/>
+                <path d="M28,54 Q50,52 72,56" fill="none" stroke="#374151" stroke-width="0.8"/>
+                <text x="5" y="95" fill="#4b5563" font-size="6">Lateral</text>
+              </svg>
+            </div>
+            <div class="aspect-square bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center cursor-pointer hover:ring-2 hover:ring-primary transition-shadow">
+              <svg class="w-full h-full p-3" viewBox="0 0 100 100">
+                <rect width="100" height="100" fill="#111827"/>
+                <!-- DV view -->
+                <ellipse cx="50" cy="45" rx="26" ry="33" fill="none" stroke="#374151" stroke-width="1.5"/>
+                <ellipse cx="50" cy="45" rx="12" ry="14" fill="#374151" opacity="0.5"/>
+                <line x1="50" y1="12" x2="50" y2="78" stroke="#374151" stroke-width="2"/>
+                <path d="M36,25 Q50,23 64,25" fill="none" stroke="#374151" stroke-width="0.8"/>
+                <path d="M34,33 Q50,31 66,33" fill="none" stroke="#374151" stroke-width="0.8"/>
+                <path d="M33,41 Q50,39 67,41" fill="none" stroke="#374151" stroke-width="0.8"/>
+                <path d="M34,49 Q50,47 66,49" fill="none" stroke="#374151" stroke-width="0.8"/>
+                <path d="M35,57 Q50,55 65,57" fill="none" stroke="#374151" stroke-width="0.8"/>
+                <text x="5" y="95" fill="#4b5563" font-size="6">DV View</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT PANEL -->
+      <div class="lg:col-span-4 space-y-4">
+
+        <!-- Top Right: Vet Diagnosis -->
+        <div class="bg-white rounded-xl shadow-sm p-4">
+          <div class="flex items-center gap-2 mb-3">
+            <svg class="w-4 h-4 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15a2.25 2.25 0 012.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0118 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3l1.5 1.5 3-3.75"/></svg>
+            <span class="text-sm font-semibold text-navy">主治獸醫診斷</span>
+          </div>
+
+          <!-- Owner complaint -->
+          <div class="bg-amber-50 border border-amber-200/60 rounded-lg p-3 mb-3">
+            <p class="text-[10px] font-semibold text-accent mb-1.5">飼主主訴</p>
+            <p class="text-xs text-gray-700 leading-relaxed">公主三世今日10:10昏倒地，有心跳，感覺虛弱，灌水持續按摩胸腔後立即送醫。</p>
+          </div>
+
+          <!-- Owner info -->
+          <div class="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs mb-3 pb-3 border-b border-gray-100">
+            <div><span class="text-gray-400">飼主名稱</span> <span class="text-navy font-medium ml-1">彭曉華</span></div>
+            <div><span class="text-gray-400">手機</span> <span class="text-navy font-medium ml-1">0975779XX</span></div>
+            <div><span class="text-gray-400">住址</span> <span class="text-navy font-medium ml-1">新北市板橋區...</span></div>
+            <div><span class="text-gray-400">年齡</span> <span class="text-navy font-medium ml-1">60歲左右</span></div>
+          </div>
+
+          <!-- Vet diagnosis -->
+          <div class="space-y-2 text-xs text-gray-600 leading-relaxed">
+            <p><span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-navy text-white text-[9px] mr-1.5 flex-shrink-0">1</span>經臨床理學檢查與心音聽診，該馬爾濟斯於左側心尖區可觸及明顯心雜音（約Grade III/IV），心音節奏偶有不規則/頓象。</p>
+            <p><span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-navy text-white text-[9px] mr-1.5 flex-shrink-0">2</span>另行心臟超音波檢查，發現二尖瓣膜閉鎖不全伴隨部中膜至重度增現象，左心房與左心室已比例偏大（LA/Ao）略高於正常範圍。</p>
+          </div>
+        </div>
+
+        <!-- Bottom Right: PetRisk AI -->
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-primary/20">
+          <!-- Header -->
+          <div class="bg-gradient-to-r from-primary/10 to-primary/5 px-4 py-3 flex items-center gap-2 border-b border-primary/10">
+            <div class="w-6 h-6 rounded-md bg-primary flex items-center justify-center">
+              <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z"/></svg>
+            </div>
+            <span class="text-sm font-bold text-navy">PetRisk AI 輔助判斷</span>
+          </div>
+
+          <div class="p-4 space-y-4">
+            <!-- ASCVD Risk -->
+            <div>
+              <p class="text-[10px] text-gray-400 font-semibold mb-2 uppercase tracking-wider">ASCVD Risk Estimator</p>
+              <div class="grid grid-cols-2 gap-3 mb-3">
+                <div class="bg-surface rounded-lg p-3 text-center">
+                  <p class="text-[10px] text-gray-400 mb-1">10-Year ASCVD Risk</p>
+                  <p class="text-2xl font-bold text-orange-500">11.4%</p>
+                  <p class="text-[10px] text-gray-400 mt-0.5">1.2% optimal risk</p>
+                </div>
+                <div class="bg-surface rounded-lg p-3 text-center">
+                  <p class="text-[10px] text-gray-400 mb-1">Lifetime ASCVD Risk</p>
+                  <p class="text-2xl font-bold text-red-500">69%</p>
+                  <p class="text-[10px] text-gray-400 mt-0.5">5% factual risk</p>
+                </div>
+              </div>
+              <!-- Risk bar -->
+              <div class="relative">
+                <div class="risk-bar h-2 rounded-full"></div>
+                <!-- Marker for 11.4% -->
+                <div class="absolute top-0 h-2 flex items-center" style="left:28%">
+                  <div class="w-3 h-3 rounded-full bg-white border-2 border-orange-500 -mt-0.5"></div>
+                </div>
+                <div class="flex justify-between text-[9px] text-gray-400 mt-1">
+                  <span>Low</span><span>Borderline</span><span>Intermediate</span><span>High</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- PAC Donut + metrics -->
+            <div class="flex items-center gap-4">
+              <!-- Donut Chart -->
+              <div class="relative flex-shrink-0" style="width:100px;height:100px">
+                <svg viewBox="0 0 120 120" class="w-full h-full">
+                  <!-- Background ring -->
+                  <circle cx="60" cy="60" r="48" fill="none" stroke="#e5e7eb" stroke-width="10"/>
+                  <!-- PAC ring 78.2% -->
+                  <circle cx="60" cy="60" r="48" fill="none" stroke="#4ecdc4" stroke-width="10"
+                    stroke-dasharray="235.6 301.6" stroke-dashoffset="-75.4"
+                    stroke-linecap="round" transform="rotate(-90 60 60)" class="donut-ring"/>
+                  <!-- Remaining segments -->
+                  <circle cx="60" cy="60" r="48" fill="none" stroke="#f59e0b" stroke-width="10"
+                    stroke-dasharray="40 261.6" stroke-dashoffset="-310.9"
+                    stroke-linecap="round" transform="rotate(-90 60 60)"/>
+                  <circle cx="60" cy="60" r="48" fill="none" stroke="#ef4444" stroke-width="10"
+                    stroke-dasharray="25.6 276" stroke-dashoffset="-350.9"
+                    stroke-linecap="round" transform="rotate(-90 60 60)"/>
+                  <!-- Center text -->
+                  <text x="60" y="55" text-anchor="middle" class="text-lg" font-size="18" font-weight="bold" fill="#1a1a2e">78.2%</text>
+                  <text x="60" y="72" text-anchor="middle" font-size="9" fill="#9ca3af">PAC</text>
+                </svg>
+              </div>
+              <!-- Legend -->
+              <div class="space-y-2 text-xs">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+                  <span class="text-gray-600">PAC (Premature Atrial Complex)</span>
+                  <span class="font-bold text-navy ml-auto">78.2%</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+                  <span class="text-gray-600">Sinus Rhythm</span>
+                  <span class="font-bold text-navy ml-auto">13.3%</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+                  <span class="text-gray-600">Other</span>
+                  <span class="font-bold text-navy ml-auto">8.5%</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- AI Analysis -->
+            <div class="border-t border-gray-100 pt-3 space-y-2 text-xs text-gray-600 leading-relaxed">
+              <p><span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-primary text-white text-[9px] mr-1.5 flex-shrink-0">1</span>經由心電圖（ECG）檢測並結合 AI 心臟節律分析模型進行輔助判讀，該馬爾濟斯於靜態心電圖呈現性異於性實質心律不整併發陣發性早期心房收縮（PAC）。</p>
+              <p><span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-primary text-white text-[9px] mr-1.5 flex-shrink-0">2</span>AI 模型顯示其 P 波振幅略增高、P-R 間期輕度延長，符合左心房負荷增加之可能。</p>
+              <p><span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-primary text-white text-[9px] mr-1.5 flex-shrink-0">3</span>提供後續心音疾病的機率如上表輔助診斷。</p>
+              <p><span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-primary text-white text-[9px] mr-1.5 flex-shrink-0">4</span>建議於3個月內再進行檢查，如情形持續可進一步進行預防性治療。</p>
+            </div>
+
+            <!-- Bottom buttons -->
+            <div class="flex gap-2 pt-1">
+              <button class="flex-1 px-4 py-2 bg-primary text-white text-xs font-semibold rounded-lg hover:bg-primary/90 transition-colors cursor-pointer flex items-center justify-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182M2.985 14.652"/></svg>
+                更新
+              </button>
+              <button class="flex-1 px-4 py-2 bg-navy text-white text-xs font-semibold rounded-lg hover:bg-navy/90 transition-colors cursor-pointer flex items-center justify-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/></svg>
+                OCR
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mobile Preview -->
+        <div class="bg-white rounded-xl shadow-sm p-4">
+          <div class="flex items-center gap-2 mb-3">
+            <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/></svg>
+            <span class="text-xs font-semibold text-navy">Mr.Pet App 預覽</span>
+          </div>
+          <div class="mx-auto bg-navy rounded-2xl p-2 max-w-[180px]">
+            <div class="bg-surface rounded-xl overflow-hidden">
+              <!-- Mini phone UI -->
+              <div class="bg-primary px-2 py-1.5 flex items-center justify-between">
+                <span class="text-[7px] text-white font-bold">Mr.Pet</span>
+                <div class="flex gap-0.5">
+                  <span class="w-1 h-1 rounded-full bg-white/60"></span>
+                  <span class="w-1 h-1 rounded-full bg-white/60"></span>
+                  <span class="w-1 h-1 rounded-full bg-white/60"></span>
+                </div>
+              </div>
+              <div class="p-2 space-y-1.5">
+                <div class="flex items-center gap-1.5">
+                  <div class="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center">
+                    <svg class="w-3 h-3 text-primary/60" viewBox="0 0 64 64" fill="currentColor"><ellipse cx="20" cy="16" rx="6" ry="8"/><ellipse cx="44" cy="16" rx="6" ry="8"/><ellipse cx="32" cy="38" rx="14" ry="12"/></svg>
+                  </div>
+                  <div>
+                    <p class="text-[6px] font-bold text-navy">公主三世</p>
+                    <p class="text-[5px] text-gray-400">馬爾濟斯 / 9歲</p>
+                  </div>
+                </div>
+                <div class="bg-white rounded p-1.5">
+                  <p class="text-[5px] text-gray-400 mb-0.5">心臟風險</p>
+                  <div class="flex items-end gap-1">
+                    <span class="text-[8px] font-bold text-orange-500">11.4%</span>
+                    <span class="text-[5px] text-gray-400">10yr</span>
+                  </div>
+                  <div class="risk-bar h-1 rounded-full mt-1"></div>
+                </div>
+                <div class="bg-white rounded p-1.5">
+                  <p class="text-[5px] text-gray-400 mb-0.5">PAC</p>
+                  <span class="text-[8px] font-bold text-primary">78.2%</span>
+                </div>
+                <div class="bg-white rounded p-1.5">
+                  <p class="text-[5px] text-gray-400">下次回診</p>
+                  <p class="text-[6px] text-navy font-medium">3個月內</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+// Tab switching
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const tab = btn.dataset.tab;
+    document.querySelectorAll('.tab-panel').forEach(p => {
+      p.classList.toggle('hidden', p.dataset.panel !== tab);
+    });
+  });
+});
+
+// Sidebar toggle
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('hidden');
+}
+
+// Calendar
+let calYear = 2023, calMonth = 3; // April 2023 (0-indexed)
+const visitDates = [3, 8, 15, 22];
+
+function renderCalendar() {
+  const title = document.getElementById('calendarTitle');
+  const grid = document.getElementById('calendarGrid');
+  title.textContent = `${calYear}年${calMonth + 1}月`;
+
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const today = 8; // simulated
+
+  let html = '';
+  for (let i = 0; i < firstDay; i++) {
+    html += '<span class="w-7 h-7"></span>';
+  }
+  for (let d = 1; d <= daysInMonth; d++) {
+    const isVisit = visitDates.includes(d);
+    const isToday = d === today;
+    html += `<span class="calendar-day w-7 h-7 flex items-center justify-center rounded-full cursor-pointer text-gray-600 transition-colors ${isVisit ? 'has-visit' : ''} ${isToday ? 'today' : ''}">${d}</span>`;
+  }
+  grid.innerHTML = html;
+}
+
+function changeMonth(delta) {
+  calMonth += delta;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  renderCalendar();
+}
+
+renderCalendar();
+
+// Sidebar nav active toggle
+document.querySelectorAll('.sidebar-item').forEach(item => {
+  item.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
