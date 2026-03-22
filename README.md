@@ -18,7 +18,7 @@
 
 ## 部署
 
-域名：`mrpet.mhsu.me`
+域名：`mrpet.tw`
 
 ```bash
 # 本地預覽
