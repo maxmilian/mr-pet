@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mr.Pet × PetRisk.AI 雙系統架構提案</title>
+  <title>Mr.Pet × PetRisk.AI 雙系統架構提案（v1.1 WordPress 混合）</title>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -53,9 +53,9 @@
     <div class="header">
       <div class="header-row">
         <div class="pulse-dot"></div>
-        <h1>Mr.Pet × PetRisk.AI 雙系統架構提案</h1>
+        <h1>Mr.Pet × PetRisk.AI 雙系統架構提案 <span style="color:#94a3b8;font-size:0.8rem;font-weight:400;">v1.1 / WordPress 混合架構</span></h1>
       </div>
-      <p class="subtitle">子域名獨立部署 · SSO 單點登入 · 去識別化資料隔離 · GCP 多租戶 SaaS</p>
+      <p class="subtitle">WordPress 電商 (Linode) · 獸醫端自建 (GCP) · Clerk SSO · PetPoint 中央點數引擎 · 醫療資料隔離</p>
     </div>
 
     <div class="diagram-container">
@@ -78,42 +78,44 @@
         <!-- Background -->
         <rect width="100%" height="100%" fill="url(#grid)" />
 
-        <!-- ==================== GCP REGION ==================== -->
+        <!-- ==================== HYBRID INFRA ==================== -->
         <rect x="100" y="40" width="1060" height="660" rx="12" fill="rgba(251, 191, 36, 0.04)" stroke="#fbbf24" stroke-width="1" stroke-dasharray="8,4"/>
-        <text x="118" y="60" fill="#fbbf24" font-size="10" font-weight="600">Google Cloud Platform (Taiwan / asia-east1)</text>
+        <text x="118" y="60" fill="#fbbf24" font-size="10" font-weight="600">混合主機架構：Linode (Mr.Pet 電商) + Google Cloud Platform asia-east1 (PetRisk.AI + 共享服務)</text>
 
         <!-- ==================== Mr.Pet ZONE (Gold) ==================== -->
         <rect x="130" y="85" width="460" height="380" rx="10" fill="rgba(212, 165, 116, 0.06)" stroke="#D4A574" stroke-width="1.5" stroke-dasharray="6,3"/>
-        <text x="145" y="105" fill="#D4A574" font-size="11" font-weight="600">🛒 Mr.Pet 電商 &amp; 飼主端 (C端)</text>
+        <text x="145" y="105" fill="#D4A574" font-size="11" font-weight="600">🛒 Mr.Pet 電商 &amp; 飼主端 (C端) · Linode 主機</text>
         <text x="145" y="118" fill="#94a3b8" font-size="8">mrpet.tw</text>
 
-        <!-- Mr.Pet Web/App -->
+        <!-- WordPress + WooCommerce -->
         <rect x="160" y="140" width="160" height="70" rx="6" fill="#1a1a2e" stroke="#D4A574" stroke-width="1.5"/>
         <rect x="160" y="140" width="160" height="70" rx="6" fill="rgba(212, 165, 116, 0.25)" stroke="#D4A574" stroke-width="1.5"/>
-        <text x="240" y="168" fill="white" font-size="11" font-weight="600" text-anchor="middle">Mr.Pet Web / App</text>
-        <text x="240" y="185" fill="#D4A574" font-size="9" text-anchor="middle">Next.js / Tailwind</text>
-        <text x="240" y="198" fill="#94a3b8" font-size="8" text-anchor="middle">PWA + Mobile Web</text>
+        <text x="240" y="168" fill="white" font-size="11" font-weight="600" text-anchor="middle">WordPress + WC</text>
+        <text x="240" y="185" fill="#D4A574" font-size="9" text-anchor="middle">PHP 8 / WooCommerce</text>
+        <text x="240" y="198" fill="#94a3b8" font-size="8" text-anchor="middle">商城 + 主題（行動優先）</text>
 
-        <!-- Mr.Pet API -->
+        <!-- WP REST API + Plugins -->
         <rect x="160" y="250" width="160" height="70" rx="6" fill="#1a1a2e" stroke="#34d399" stroke-width="1.5"/>
         <rect x="160" y="250" width="160" height="70" rx="6" fill="rgba(52, 211, 153, 0.15)" stroke="#34d399" stroke-width="1.5"/>
-        <text x="240" y="278" fill="white" font-size="11" font-weight="600" text-anchor="middle">Mr.Pet API</text>
-        <text x="240" y="295" fill="#34d399" font-size="9" text-anchor="middle">FastAPI / Node.js</text>
-        <text x="240" y="308" fill="#94a3b8" font-size="8" text-anchor="middle">REST + GraphQL</text>
+        <text x="240" y="275" fill="white" font-size="11" font-weight="600" text-anchor="middle">WP REST + Plugins</text>
+        <text x="240" y="290" fill="#34d399" font-size="9" text-anchor="middle">綠界金流 / 發票 / OIDC</text>
+        <text x="240" y="303" fill="#94a3b8" font-size="8" text-anchor="middle">Wordfence WAF</text>
+        <text x="240" y="314" fill="#94a3b8" font-size="8" text-anchor="middle">+ mu-plugin: PetPoint Bridge</text>
 
-        <!-- PetPoint Service -->
+        <!-- PetPoint Engine (now central) -->
         <rect x="350" y="250" width="140" height="70" rx="6" fill="#1a1a2e" stroke="#D4A574" stroke-width="1.5"/>
         <rect x="350" y="250" width="140" height="70" rx="6" fill="rgba(212, 165, 116, 0.2)" stroke="#D4A574" stroke-width="1.5"/>
-        <text x="420" y="278" fill="white" font-size="11" font-weight="600" text-anchor="middle">PetPoint</text>
-        <text x="420" y="295" fill="#D4A574" font-size="9" text-anchor="middle">紅利點數引擎</text>
-        <text x="420" y="308" fill="#94a3b8" font-size="8" text-anchor="middle">Redis + PostgreSQL</text>
+        <text x="420" y="275" fill="white" font-size="11" font-weight="600" text-anchor="middle">PetPoint Engine</text>
+        <text x="420" y="290" fill="#D4A574" font-size="9" text-anchor="middle">中央點數帳本（自建）</text>
+        <text x="420" y="303" fill="#94a3b8" font-size="8" text-anchor="middle">Cloud Run + Postgres</text>
+        <text x="420" y="314" fill="#94a3b8" font-size="8" text-anchor="middle">跨系統 REST API</text>
 
         <!-- NewebPay -->
         <rect x="160" y="370" width="160" height="70" rx="6" fill="#1a1a2e" stroke="#94a3b8" stroke-width="1.5"/>
         <rect x="160" y="370" width="160" height="70" rx="6" fill="rgba(148, 163, 184, 0.15)" stroke="#94a3b8" stroke-width="1.5"/>
         <text x="240" y="398" fill="white" font-size="11" font-weight="600" text-anchor="middle">綠界 NewebPay</text>
         <text x="240" y="415" fill="#94a3b8" font-size="9" text-anchor="middle">金流 + 電子發票</text>
-        <text x="240" y="428" fill="#94a3b8" font-size="8" text-anchor="middle">外部第三方</text>
+        <text x="240" y="428" fill="#94a3b8" font-size="8" text-anchor="middle">官方 plugin 串接</text>
 
         <!-- ==================== PetRisk.AI ZONE (Teal) ==================== -->
         <rect x="620" y="85" width="460" height="380" rx="10" fill="rgba(78, 205, 196, 0.06)" stroke="#4ecdc4" stroke-width="1.5" stroke-dasharray="6,3"/>
@@ -159,12 +161,13 @@
         <rect x="130" y="500" width="950" height="170" rx="10" fill="rgba(30, 41, 59, 0.3)" stroke="#64748b" stroke-width="1" stroke-dasharray="4,4"/>
         <text x="145" y="520" fill="#94a3b8" font-size="10" font-weight="600">🔒 共享基礎設施 &amp; 資料層（資訊隔離 + 去識別化）</text>
 
-        <!-- SSO / Identity -->
+        <!-- Clerk SSO -->
         <rect x="520" y="140" width="160" height="70" rx="6" fill="#1a1a2e" stroke="#fb7185" stroke-width="1.5"/>
         <rect x="520" y="140" width="160" height="70" rx="6" fill="rgba(251, 113, 133, 0.2)" stroke="#fb7185" stroke-width="1.5"/>
-        <text x="600" y="168" fill="white" font-size="11" font-weight="600" text-anchor="middle">SSO / Identity</text>
-        <text x="600" y="185" fill="#fb7185" font-size="9" text-anchor="middle">LINE / Google / Apple</text>
-        <text x="600" y="198" fill="#94a3b8" font-size="8" text-anchor="middle">OAuth 2.0 + OIDC</text>
+        <text x="600" y="165" fill="white" font-size="11" font-weight="600" text-anchor="middle">Clerk SSO (IdP)</text>
+        <text x="600" y="180" fill="#fb7185" font-size="9" text-anchor="middle">LINE / Google / Apple</text>
+        <text x="600" y="193" fill="#94a3b8" font-size="8" text-anchor="middle">OAuth 2.0 + OIDC</text>
+        <text x="600" y="204" fill="#94a3b8" font-size="8" text-anchor="middle">託管服務 · Free 10K MAU</text>
 
         <!-- Token ID Service -->
         <rect x="160" y="545" width="180" height="70" rx="6" fill="#1a1a2e" stroke="#fb7185" stroke-width="1.5"/>
@@ -180,19 +183,21 @@
         <text x="470" y="590" fill="#a78bfa" font-size="9" text-anchor="middle">去識別化醫療紀錄</text>
         <text x="470" y="603" fill="#94a3b8" font-size="8" text-anchor="middle">PostgreSQL (加密)</text>
 
-        <!-- Shared PostgreSQL -->
+        <!-- Linode MySQL (WP) -->
         <rect x="600" y="545" width="180" height="70" rx="6" fill="#1a1a2e" stroke="#a78bfa" stroke-width="1.5"/>
         <rect x="600" y="545" width="180" height="70" rx="6" fill="rgba(167, 139, 250, 0.15)" stroke="#a78bfa" stroke-width="1.5"/>
-        <text x="690" y="573" fill="white" font-size="11" font-weight="600" text-anchor="middle">Shared PostgreSQL</text>
-        <text x="690" y="590" fill="#a78bfa" font-size="9" text-anchor="middle">電商 + 會員 + 點數</text>
-        <text x="690" y="603" fill="#94a3b8" font-size="8" text-anchor="middle">Cloud SQL (獨立 Instance)</text>
+        <text x="690" y="570" fill="white" font-size="11" font-weight="600" text-anchor="middle">Linode MySQL</text>
+        <text x="690" y="585" fill="#a78bfa" font-size="9" text-anchor="middle">WP 電商 + 訂單 + 商品</text>
+        <text x="690" y="598" fill="#94a3b8" font-size="8" text-anchor="middle">不存醫療資料</text>
+        <text x="690" y="609" fill="#94a3b8" font-size="8" text-anchor="middle">+ Redis Object Cache</text>
 
-        <!-- Cloud Run / GKE -->
+        <!-- GCP Cloud Run -->
         <rect x="820" y="545" width="180" height="70" rx="6" fill="#1a1a2e" stroke="#fbbf24" stroke-width="1.5"/>
         <rect x="820" y="545" width="180" height="70" rx="6" fill="rgba(251, 191, 36, 0.15)" stroke="#fbbf24" stroke-width="1.5"/>
-        <text x="910" y="573" fill="white" font-size="11" font-weight="600" text-anchor="middle">Cloud Run / GKE</text>
-        <text x="910" y="590" fill="#fbbf24" font-size="9" text-anchor="middle">容器化部署</text>
-        <text x="910" y="603" fill="#94a3b8" font-size="8" text-anchor="middle">Auto-scaling + Load Balancer</text>
+        <text x="910" y="570" fill="white" font-size="11" font-weight="600" text-anchor="middle">GCP Cloud Run</text>
+        <text x="910" y="585" fill="#fbbf24" font-size="9" text-anchor="middle">PetRisk API + PetPoint</text>
+        <text x="910" y="598" fill="#94a3b8" font-size="8" text-anchor="middle">min-instance=0</text>
+        <text x="910" y="609" fill="#94a3b8" font-size="8" text-anchor="middle">+ Cloudflare CDN/WAF</text>
 
         <!-- ==================== EXTERNAL ACTORS ==================== -->
         <!-- Pet Owner -->
@@ -301,11 +306,11 @@
           <h3>🛒 Mr.Pet 電商 &amp; 飼主端 (C端)</h3>
         </div>
         <ul>
-          <li>• 獨立網域：mrpet.tw</li>
-          <li>• 上架寵物用品、食品、體驗券等商品</li>
-          <li>• 綠界 NewebPay 金流 + 電子發票</li>
-          <li>• PetPoint 紅利點數累積與折抵機制</li>
-          <li>• PWA 行動優先，Next.js + Tailwind</li>
+          <li>• 獨立網域：mrpet.tw（Linode 主機）</li>
+          <li>• WordPress + WooCommerce + 行動優先主題</li>
+          <li>• 綠界 NewebPay plugin + 電子發票 plugin</li>
+          <li>• Cloudflare CDN/WAF + Wordfence 安全強化</li>
+          <li>• 商品上架後台（客戶可自助管理 SKU）</li>
         </ul>
       </div>
 
@@ -315,11 +320,11 @@
           <h3>🩺 PetRisk.AI 獸醫端 SaaS (B端)</h3>
         </div>
         <ul>
-          <li>• 子域名獨立：vet.mrpet.tw（未來可拆站）</li>
-          <li>• 多租戶架構：每間診所獨立 Workspace</li>
-          <li>• 醫療影像上傳（X光 / CT / 超音波）</li>
-          <li>• Vertex AI 提供 Second Opinion 輔助診斷</li>
-          <li>• 期刊論文 RAG 知識庫支撐可解釋性</li>
+          <li>• 子域名獨立：vet.mrpet.tw（GCP Cloud Run）</li>
+          <li>• React + Refine 框架 · Python FastAPI</li>
+          <li>• 多租戶架構：PG Row-Level Security</li>
+          <li>• Vertex AI Gemini Multimodal 影像分析</li>
+          <li>• LlamaIndex + PGVector 期刊 RAG 可解釋性</li>
         </ul>
       </div>
 
@@ -329,17 +334,17 @@
           <h3>🔒 安全 &amp; 合規設計</h3>
         </div>
         <ul>
-          <li>• SSO 單點登入：LINE / Google / Apple ID</li>
-          <li>• Token ID 去識別化：獸醫看不見其他醫院身分</li>
-          <li>• 資訊隔離：醫療個資 vs 電商資料完全切分</li>
-          <li>• ISO 27001 個資保護合規</li>
-          <li>• 隱私條款 + 免責聲明 + 使用者同意書</li>
+          <li>• Clerk 中央 SSO：LINE / Google / Apple</li>
+          <li>• PetPoint 中央點數引擎（跨系統 REST API）</li>
+          <li>• Token ID 去識別化：獸醫看不見彼此身分</li>
+          <li>• 資料邊界：醫療資料絕不進 WordPress DB</li>
+          <li>• ISO 27001 個資 + 隱私條款 + 免責聲明</li>
         </ul>
       </div>
     </div>
 
     <p class="footer">
-      Mr.Pet × PetRisk.AI · 雙系統架構提案 · GCP · 2026-05-09
+      Mr.Pet × PetRisk.AI · 雙系統架構提案 v1.1 · WordPress + GCP 混合 · 2026-05-09
     </p>
   </div>
 </body>
