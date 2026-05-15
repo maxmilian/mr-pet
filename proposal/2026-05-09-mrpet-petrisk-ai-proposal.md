@@ -2,9 +2,10 @@
 
 > **提案方**：Max Hsu（技術架構 & 全端開發）  
 > **客戶**：Mr.Pet × PetRisk.AI 團隊  
-> **日期**：2026-05-09  
+> **日期**：2026-05-09（v1.2 更新於 2026-05-15，補入客戶 BP 投影片資訊）  
 > **版本**：MVP 提案（WordPress 混合架構）  
-> **會議紀錄**：參見 [2026-05-09 PetAI 會議紀錄](../meeting-notes/2026-05-09-petai.md)
+> **會議紀錄**：參見 [2026-05-09 PetAI 會議紀錄](../meeting-notes/2026-05-09-petai.md)  
+> **客戶 BP 對位**：參見 [2026-05-15 BP 投影片資訊整理](../meeting-notes/2026-05-15-petrisk-bp-slides-summary.md)
 
 ---
 
@@ -18,6 +19,100 @@ Mr.Pet × PetRisk.AI 是一個**人寵健康 AI 生態系**，分為兩大子系
 | **PetRisk.AI** | 獸醫端 SaaS + AI 輔助診斷 | B 端獸醫診所 | `vet.mrpet.tw` | 自建 React + FastAPI（GCP）|
 
 採**混合架構**：電商端用 WordPress + WooCommerce 大幅縮短上線時程；獸醫端因醫療合規需求自建。兩系統透過 **Clerk SSO 中央身份層**與 **PetPoint 中央點數引擎**連動，醫療資料完全隔離於 WordPress 之外。
+
+---
+
+## 一之二、對位客戶 BP 願景
+
+> 客戶 BP 描繪 PetRisk.ai 為「多模態醫療 AI 平台」，本提案處理的是 **MVP 落地階段**。
+> 本節說明兩者對位關係，避免投資人簡報 ↔ 工程交付脫節。
+
+### A. PetRisk.ai 核心技術架構五層（BP 揭露）
+
+| 層級 | BP 名稱 | MVP 提案對應 |
+|---|---|---|
+| L5 | 臨床流程整合 Clinical Workflow Layer（PMS 嵌合、健檢/慢病追蹤） | **Phase 2+**（MVP 不做 PMS 整合，先做獨立 Dashboard） |
+| L4 | 預測與建議層 Prediction & Recommendation（風險分數、Next-best-Actions） | §3.2.4 AI Second Opinion（文字診斷建議 + 機率）|
+| L3 | 多模態核心引擎 Multimodal Engine（Mixture of Models、Clinical Fusion） | §2.4.3 Vertex AI Gemini Multimodal（MVP 簡化版） |
+| L2 | 臨床特徵工程 Clinical Feature Layer（Breed-adjusted Z-Scores、時序、語意嵌入） | **Phase 2+**（需 9 犬 3 貓資料齊備才能跑 Z-Score）|
+| L1 | 資料擷取層 Data Acquisition（PetRisk Canonical Schema、First Data Moat） | §3.2.3 影像上傳（MVP 僅 JPEG/PNG，DICOM 列 Phase 2） |
+
+**MVP 取捨**：先把 L4（預測）+ L3（多模態）的最小可用切出來，L1/L2/L5 用簡化版頂著（單一上傳介面 / 不做 Z-Score / 不接 PMS）。
+
+### B. BP 技術棧 vs MVP 提案技術棧
+
+| 角色 | BP 揭露 | MVP 提案 | 差異說明 |
+|---|---|---|---|
+| Data Ingestion | FastAPI + GCP IAM、DICOM | FastAPI + GCS + IAM | ✅ 對齊（DICOM 延後）|
+| Storage | GCS（影像）+ BigQuery（結構化） | GCS（影像）+ Cloud SQL PostgreSQL（結構化） | ⚠️ MVP 用 PostgreSQL，BQ 留給未來分析 |
+| Annotation | CVAT | — | MVP 不做大規模標註，沿用台大已標註資料 |
+| Pre-process | OpenCV / MONAI / Pydicom / wfdb | — | Phase 2+（DICOM/ECG 進來才需要） |
+| Feature Eng. | Python / Pandas / Scikit-learn | — | Phase 2+（Z-Score 階段才導入）|
+| Model Training | PyTorch / T-Flow / MONAI / Vertex AI | **直接用 Vertex AI Gemini（不自訓模型）** | ⚠️ MVP **不自訓模型**，用 Gemini Multimodal API + RAG 補臨床知識 |
+| Knowledge Engine | LLM + KnowledgeGraph（Neo4j / LangChain） | LlamaIndex + PGVector（向量檢索） | ⚠️ MVP 不導入 Knowledge Graph，僅做 RAG |
+| Vet Dashboard | React + Web | React + Refine + Tailwind | ✅ 對齊 |
+| Pet Owner App | Flutter for Mobile | **WordPress 站台 + 後續 PWA** | ⚠️ MVP 不做原生 App，Flutter 列 Phase 2+ |
+
+> **核心訊息給客戶**：MVP 不在「自建多模態模型」這條路上燒時間，而是用 Vertex AI Gemini 把 **L3+L4 的「對外可用體驗」**先做出來。L1（DICOM/CVAT）、L2（Z-Score）、自訓 PyTorch/MONAI 模型，等資料量、標註品質、臨床驗證都到位後再做（建議 Phase 3+，2026 Q4 起）。
+
+### C. MVP 內容範圍（與 BP 口頭確認對齊）
+
+- **5 個專科模組**（具體哪 5 個待客戶確認，從 BP 中 ECG/ASCVD 示意推測心臟科為其一）
+- **9 個犬種 + 3 個貓種** = 12 個 breed-adjusted 模型對應
+- **5 × 12 = 60 組 sub-model 配對**
+
+> **可行性提醒**：60 組配對在 MVP 8 月底前不可能全部做到「臨床可信」品質。建議第一階段聚焦 **1 專科 × 3 犬種** 做 vertical slice 驗證 RAG + Gemini pipeline，其餘留為 Phase 2 滾動式擴充。此調整需與客戶於 5 月底前確認。
+
+### D. 雙產品定價（與 BP 對齊）
+
+| 產品 | 對象 | BP 揭露定價 | 本提案系統需支援 |
+|---|---|---|---|
+| **PetRisk.ai** | 合作獸醫端 B2B | 月繳 **39 / 3,000 元**（兩階）| 訂閱方案管理、用量計費（Phase 2） |
+| **Mr.Pet** | 飼主端 D2C | 月繳 **598 / 1,598 / 2,989 元**（三階訂閱）| WooCommerce 訂閱 plugin、訂閱盒物流 |
+
+> **MVP 8 月版本**：先支援單一付費模式（PetRisk 用單一價、Mr.Pet 走一次性購物），訂閱方案管理列入 Phase 2。
+
+### E. 命名差異提醒：PetPoint ↔ VetPoints Rewards
+
+- 本提案內部稱「PetPoint 中央點數引擎」
+- BP 對外稱「**VetPoints Rewards**」（連接 Mr.Pet ↔ PetRisk.ai 雙邊飛輪的核心機制）
+- **建議**：技術內部沿用 PetPoint Engine，對外品牌 UI 一律使用 VetPoints；engine 同一套不需改名
+
+### F. 雙邊商業模式飛輪（BP 揭露，影響系統設計）
+
+BP 明確定義雙邊價值：
+
+- **飼主端**：世界級獸醫建議、更好醫療品質、人寵安全感、老齡醫療險機會、精喜訂閱盒
+- **獸醫端**：客源/客單增長、醫療品質提升、溝通效率提升、不損獲利%、資料去識別化
+
+> **系統設計影響**：
+> 1. PetPoint/VetPoints 須支援**雙向兌換**（飼主消費累點 / 獸醫端折抵 / 獸醫端推薦回饋）— 本提案 §3.3.3 已涵蓋
+> 2. 「老齡醫療險機會」暗示需要 export risk score 給保險合作方 → Phase 2+ API
+> 3. 「資料去識別化」承諾 → 本提案 §3.3.2 Token ID 已完整覆蓋
+> 4. 「精喜訂閱盒」→ WooCommerce 需加 Subscriptions plugin（Phase 2）
+
+### G. 競爭定位（BP 揭露）
+
+BP 競爭分析象限把 Mr.Pet × PetRisk.AI 放在「**多領域健康管理 + 獸醫療輔助判斷**」獨佔象限，對標：
+
+- 單領域 + 醫療輔助：SignalPET、Zoetis VETSCAN、NxVET
+- 單領域 + 消費娛樂：ruff.box、BarkBox、Chewy Goody Box
+
+> **系統設計影響**：「多領域」承諾要求 Dashboard 從 Day 1 就用 **可擴充的專科模組架構**（plugin-style），不要寫死成單一影像分析頁。本提案 §3.2 已預留多模組路徑，但 MVP UI 需明確呈現「專科 selector」入口讓客戶 demo 有故事可說。
+
+### H. Continuous Learning 資料來源（BP 揭露）
+
+BP 列出 5 大期刊資料庫 + 台大獸醫所專家標註：
+
+- PubMed / MEDLINE
+- CABI
+- Scopus
+- IVIS
+- Wiley Online Library
+- AVMA Journals
+- 台大獸醫所專家篩選 / 標註 / 賦能
+
+> **影響本提案 §3.2.4 RAG 設計**：論文 ingestion pipeline 需支援多來源格式（PDF/XML/HTML），不能只認葉老師手上那批。建議 MVP 階段先 ingest 10~20 篇核心論文驗證 pipeline，正式上線後分批導入。
 
 ---
 
@@ -374,7 +469,9 @@ Mr.Pet × PetRisk.AI 是一個**人寵健康 AI 生態系**，分為兩大子系
 - Vertex AI Gemini 影像分析 + 期刊 RAG
 - Second Opinion 文字報告（含論文引用）
 - 獸醫師 Approve 機制
-- PetPoint 折抵 API 串接
+- PetPoint / VetPoints 折抵 API 串接
+- **專科模組 selector UI**（對齊 BP 5 專科架構，MVP 先實作 1 專科 vertical slice，UI 預留其餘 4 個 placeholder）
+- **品種選擇**：BP 規劃 9 犬 3 貓，MVP 先支援 3 犬種驗證 pipeline，其餘 9 種列 Phase 2
 
 **Phase 2（9 月後）**
 - DICOM 支援、CT / 超音波分析
@@ -458,10 +555,17 @@ Mr.Pet × PetRisk.AI 是一個**人寵健康 AI 生態系**，分為兩大子系
 
 ## 八、後續建議
 
-1. **立即行動**：確認 v1.1 提案與預算上限，啟動 Linode WP 環境與 Clerk 帳號
-2. **本週**：完成 PetRisk.AI 操作流程 Wireframe；採購 miniOrange OAuth plugin
-3. **下週**：與葉老師會面，確認期刊論文格式與 RAG ingestion 流程
-4. **持續**：雙北市獸醫公會 Demo 安排與時程確認
+1. **立即行動**：確認 v1.2 提案與預算上限，啟動 Linode WP 環境與 Clerk 帳號
+2. **本週（與客戶釐清的 BP 對位事項）**：
+   - 確認 MVP 5 專科具體為哪 5 個（推測心臟科為其一）
+   - 確認 9 犬種 + 3 貓種具體品種清單
+   - 確認 PetRisk.ai 39 元 vs 3000 元方案的服務內容差異
+   - 確認 Mr.Pet 598 / 1598 / 2989 三階訂閱具體內容物（含訂閱盒）
+   - 確認對外品牌沿用 BP 的「VetPoints Rewards」，內部仍用 PetPoint Engine
+3. **本週**：完成 PetRisk.AI 操作流程 Wireframe（含專科 selector + 品種 selector）；採購 miniOrange OAuth plugin
+4. **下週**：與葉老師會面，確認期刊論文格式與 RAG ingestion 流程；同步確認台大獸醫所標註資料規模與授權條件
+5. **持續**：雙北市獸醫公會 Demo 安排與時程確認
+6. **下階段（Phase 2+ 規劃）**：BP 五層架構中尚未涵蓋的 L1（DICOM/CVAT）、L2（Z-Score）、自訓模型（PyTorch/MONAI）需獨立提案估時，建議 2026 Q4 後啟動
 
 ---
 
