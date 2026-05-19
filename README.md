@@ -27,6 +27,6 @@ open index.html
 
 ## 聯絡
 
-- 玫瑰花瓣科技有限公司 CEO 莊彥山
-- www.mrpet.ai
-- Luke@mrpet.ai
+- 貓做科技股份有限公司 CEO 莊彥山
+- www.mrpet.tw
+- Luke@mrpet.tw
